@@ -1,9 +1,13 @@
 import "./App.css";
 
+import { DataProvider } from "./context/AppContext";
+
 function App() {
   return (
     <>
-      <h1>ALi</h1>
+      <DataProvider>
+        <p></p>
+      </DataProvider>
     </>
   );
 }
