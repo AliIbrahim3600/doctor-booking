@@ -1,9 +1,13 @@
 import "./App.css";
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router";
+import { Provider } from "react-redux";
+
+import { store } from "./store/store";
 
 import { DataProvider } from "./context/AppContext";
 import Loader from "./components/common/Loader";
+import NavBar from "./components/common/NavBar";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -30,42 +34,60 @@ const AddDoctor = lazy(() => import("./pages/admin/AddDoctor"));
 const AllDoctors = lazy(() => import("./pages/admin/AllDoctors"));
 const AllAppointments = lazy(() => import("./pages/admin/AllAppointments"));
 
+/** Renders NavBar on every page EXCEPT /login and /register */
+const AUTH_ROUTES = ["/login", "/register"];
+
+function Layout() {
+  const { pathname } = useLocation();
+  const showNav = !AUTH_ROUTES.includes(pathname);
+  return (
+    <>
+      {showNav && <NavBar />}
+      <Outlet />
+    </>
+  );
+}
+
 function App() {
   return (
-    <BrowserRouter>
-      <DataProvider>
+    <Provider store={store}>
+     <BrowserRouter>
+       <DataProvider>
         <Suspense fallback={<Loader />}>
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/doctor/:id" element={<DoctorProfile />} />
-            <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
+            <Route element={<Layout />}>
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/doctors" element={<Doctors />} />
+              <Route path="/doctor/:id" element={<DoctorProfile />} />
+              <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
 
-            {/* Patient Routes */}
-            <Route path="/patient/dashboard" element={<PatientDashboard />} />
-            <Route path="/patient/appointments" element={<MyAppointments />} />
-            <Route path="/patient/profile" element={<PatientProfile />} />
+              {/* Patient Routes */}
+              <Route path="/patient/dashboard" element={<PatientDashboard />} />
+              <Route path="/patient/appointments" element={<MyAppointments />} />
+              <Route path="/patient/profile" element={<PatientProfile />} />
 
-            {/* Doctor Routes */}
-            <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-            <Route path="/doctor/appointments" element={<DoctorAppointments />} />
-            <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+              {/* Doctor Routes */}
+              <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+              <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+              <Route path="/doctor/profile" element={<DoctorProfilePage />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/add-doctor" element={<AddDoctor />} />
-            <Route path="/admin/doctors" element={<AllDoctors />} />
-            <Route path="/admin/appointments" element={<AllAppointments />} />
+              {/* Admin Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/add-doctor" element={<AddDoctor />} />
+              <Route path="/admin/doctors" element={<AllDoctors />} />
+              <Route path="/admin/appointments" element={<AllAppointments />} />
 
-            {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
+              {/* Catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
           </Routes>
         </Suspense>
       </DataProvider>
     </BrowserRouter>
+    </Provider>
   );
 }
 
