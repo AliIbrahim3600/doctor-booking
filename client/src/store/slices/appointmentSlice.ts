@@ -40,6 +40,10 @@ const initialState: AppointmentState = {
 };
 
 // ── Async Thunks ───────────────────────────────────────
+/* TODO: REMOVE THIS MOCK DATA LATER WHEN BACKEND IS READY */
+const MOCK_APPOINTMENTS: Appointment[] = [];
+
+/*
 export const fetchAppointments = createAsyncThunk(
   "appointment/fetchAppointments",
   async (_, { rejectWithValue }) => {
@@ -85,6 +89,60 @@ export const updateAppointmentStatusAsync = createAsyncThunk(
       );
     }
   },
+);
+*/
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const fetchAppointments = createAsyncThunk(
+  "appointment/fetchAppointments",
+  async (_, { rejectWithValue }) => {
+    return new Promise<Appointment[]>((resolve) => setTimeout(() => resolve([...MOCK_APPOINTMENTS]), 800));
+  }
+);
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const createAppointment = createAsyncThunk(
+  "appointment/createAppointment",
+  async (appointmentData: Partial<Appointment>, { rejectWithValue }) => {
+    return new Promise<Appointment>((resolve) => {
+      setTimeout(() => {
+        const newAppt: Appointment = {
+          _id: Math.random().toString(36).substr(2, 9),
+          patientId: appointmentData.patientId || "anon",
+          patientName: appointmentData.patientName || "Unknown",
+          doctorId: appointmentData.doctorId || "",
+          doctorName: appointmentData.doctorName || "",
+          speciality: appointmentData.speciality || "",
+          date: appointmentData.date || "",
+          time: appointmentData.time || "",
+          status: "pending",
+          fees: appointmentData.fees || 0,
+          notes: appointmentData.notes,
+          createdAt: new Date().toISOString()
+        };
+        MOCK_APPOINTMENTS.unshift(newAppt);
+        resolve(newAppt);
+      }, 1000);
+    });
+  }
+);
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const updateAppointmentStatusAsync = createAsyncThunk(
+  "appointment/updateStatus",
+  async (
+    { id, status }: { id: string; status: AppointmentStatus },
+    { rejectWithValue },
+  ) => {
+    return new Promise<Appointment>((resolve, reject) => {
+      setTimeout(() => {
+        const appt = MOCK_APPOINTMENTS.find(a => a._id === id);
+        if (appt) {
+          appt.status = status;
+          resolve({...appt});
+        } else {
+          rejectWithValue("Appointment not found");
+        }
+      }, 500);
+    });
+  }
 );
 
 // ── Slice ──────────────────────────────────────────────

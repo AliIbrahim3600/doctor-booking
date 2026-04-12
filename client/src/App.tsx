@@ -10,6 +10,7 @@ import Loader from "./components/common/Loader";
 import NavBar from "./components/common/NavBar";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
+import Footer from "./components/common/Footer";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -46,6 +47,7 @@ function Layout() {
     <>
       {showNav && <NavBar />}
       <Outlet />
+      {showNav && <Footer />}
     </>
   );
 }
