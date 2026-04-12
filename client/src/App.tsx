@@ -8,6 +8,8 @@ import { store } from "./store/store";
 import { DataProvider } from "./context/AppContext";
 import Loader from "./components/common/Loader";
 import NavBar from "./components/common/NavBar";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -58,27 +60,37 @@ function App() {
             <Route element={<Layout />}>
               {/* Public Routes */}
               <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
               <Route path="/doctors" element={<Doctors />} />
               <Route path="/doctor/:id" element={<DoctorProfile />} />
-              <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
+
+              {/* Public Auth Routes (Log in / Register) */}
+              <Route element={<PublicOnlyRoute />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Route>
 
               {/* Patient Routes */}
-              <Route path="/patient/dashboard" element={<PatientDashboard />} />
-              <Route path="/patient/appointments" element={<MyAppointments />} />
-              <Route path="/patient/profile" element={<PatientProfile />} />
+              <Route element={<ProtectedRoute allowedRoles={["patient"]} />}>
+                <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
+                <Route path="/patient/dashboard" element={<PatientDashboard />} />
+                <Route path="/patient/appointments" element={<MyAppointments />} />
+                <Route path="/patient/profile" element={<PatientProfile />} />
+              </Route>
 
               {/* Doctor Routes */}
-              <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-              <Route path="/doctor/appointments" element={<DoctorAppointments />} />
-              <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+              <Route element={<ProtectedRoute allowedRoles={["doctor"]} />}>
+                <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+                <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+              </Route>
 
               {/* Admin Routes */}
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/add-doctor" element={<AddDoctor />} />
-              <Route path="/admin/doctors" element={<AllDoctors />} />
-              <Route path="/admin/appointments" element={<AllAppointments />} />
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/add-doctor" element={<AddDoctor />} />
+                <Route path="/admin/doctors" element={<AllDoctors />} />
+                <Route path="/admin/appointments" element={<AllAppointments />} />
+              </Route>
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

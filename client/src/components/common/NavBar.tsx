@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
+import { useAppSelector, useAppDispatch } from "../../store/store";
+import { logout } from "../../store/slices/authSlice";
 import {
   FiMenu,
   FiX,
@@ -13,16 +15,6 @@ import {
 } from "react-icons/fi";
 
 /* ─── types ─────────────────────────────────────── */
-interface AuthUser {
-  name: string;
-  role: string;
-  avatar?: string;
-}
-
-function useAuthUser(): AuthUser | null {
-  const raw = localStorage.getItem("user");
-  return raw ? (JSON.parse(raw) as AuthUser) : null;
-}
 
 /* ─── nav config ────────────────────────────────── */
 const NAV_LINKS = [
@@ -45,7 +37,8 @@ export default function NavBar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate   = useNavigate();
-  const user       = useAuthUser();
+  const dispatch   = useAppDispatch();
+  const user       = useAppSelector((state) => state.auth.user);
 
   /* shadow on scroll */
   useEffect(() => {
@@ -73,8 +66,7 @@ export default function NavBar() {
   }, []);
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    dispatch(logout());
     setDropdownOpen(false);
     navigate("/login");
   }
