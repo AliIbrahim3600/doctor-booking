@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
 import Footer from "./components/common/Footer";
 import DoctorLayout from "./components/doctor/DoctorLayout";
+import PatientLayout from "./components/patient/PatientLayout";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -26,6 +27,9 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const PatientDashboard = lazy(() => import("./pages/patient/Dashboard"));
 const MyAppointments = lazy(() => import("./pages/patient/MyAppointments"));
 const PatientProfile = lazy(() => import("./pages/patient/Profile"));
+const PatientRecords = lazy(() => import("./pages/patient/Records"));
+const PatientMessages = lazy(() => import("./pages/patient/Messages"));
+const PatientAnalytics = lazy(() => import("./pages/patient/Analytics"));
 
 // Doctor Pages
 const DoctorDashboard = lazy(() => import("./pages/doctor/Dashboard"));
@@ -38,14 +42,14 @@ const AddDoctor = lazy(() => import("./pages/admin/AddDoctor"));
 const AllDoctors = lazy(() => import("./pages/admin/AllDoctors"));
 const AllAppointments = lazy(() => import("./pages/admin/AllAppointments"));
 
-/** Renders NavBar on every page EXCEPT /login and /register */
 const AUTH_ROUTES = ["/login", "/register"];
 
 function Layout() {
   const { pathname } = useLocation();
 
-  const showNav = !AUTH_ROUTES.includes(pathname);
-  const showFooter = pathname !== "/"; 
+  const isPatientDashboardRoute = pathname.startsWith("/patient");
+  const showNav = !AUTH_ROUTES.includes(pathname) && !isPatientDashboardRoute;
+  const showFooter = pathname !== "/" && !isPatientDashboardRoute; 
 
   return (
     <>
@@ -80,9 +84,14 @@ function App() {
               {/* Patient Routes */}
               <Route element={<ProtectedRoute allowedRoles={["patient"]} />}>
                 <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
-                <Route path="/patient/dashboard" element={<PatientDashboard />} />
-                <Route path="/patient/appointments" element={<MyAppointments />} />
-                <Route path="/patient/profile" element={<PatientProfile />} />
+                <Route element={<PatientLayout />}>
+                  <Route path="/patient/dashboard" element={<PatientDashboard />} />
+                  <Route path="/patient/appointments" element={<MyAppointments />} />
+                  <Route path="/patient/profile" element={<PatientProfile />} />
+                  <Route path="/patient/records" element={<PatientRecords />} />
+                  <Route path="/patient/messages" element={<PatientMessages />} />
+                  <Route path="/patient/analytics" element={<PatientAnalytics />} />
+                </Route>
               </Route>
 
               {/* Doctor Routes */}

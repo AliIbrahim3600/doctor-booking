@@ -6,6 +6,7 @@ import AppointmentTable from "../../components/doctor/AppointmentTable";
 const Appointments = () => {
   const dispatch = useAppDispatch();
   const [filter, setFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
   const { appointments, isLoading } = useAppSelector((state) => state.appointment);
 
   useEffect(() => {
@@ -15,8 +16,13 @@ const Appointments = () => {
   const filters = ["All", "Pending", "Confirmed", "Completed", "Cancelled"];
 
   const filteredAppointments = appointments.filter(appt => {
-    if (filter === "All") return true;
-    return appt.status.toLowerCase() === filter.toLowerCase();
+    // 1. Status Filter
+    const matchesStatus = filter === "All" || appt.status.toLowerCase() === filter.toLowerCase();
+    
+    // 2. Search Filter
+    const matchesSearch = appt.patientName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesStatus && matchesSearch;
   });
 
   return (
@@ -43,7 +49,13 @@ const Appointments = () => {
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-8 w-full">
            <div className="flex items-center gap-2 bg-surface p-2 rounded-xl border border-outline-variant/20 w-full sm:w-80 shrink-0">
               <span className="material-symbols-outlined text-outline ml-2">search</span>
-              <input type="text" placeholder="Search patients..." className="bg-transparent border-none outline-none text-sm w-full text-on-surface" />
+              <input 
+                type="text" 
+                placeholder="Search patients..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-transparent border-none outline-none text-sm w-full text-on-surface" 
+              />
            </div>
            <button className="flex items-center justify-center gap-2 px-4 py-2 border border-outline-variant/20 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container transition-colors sm:w-auto">
               <span className="material-symbols-outlined text-sm">filter_list</span>
