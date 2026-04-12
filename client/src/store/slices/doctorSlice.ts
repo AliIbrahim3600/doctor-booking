@@ -58,7 +58,7 @@ const MOCK_DOCTORS: Doctor[] = [
   {
     _id: "1",
     name: "Dr. Sarah Jenkins",
-    email: "sarah@example.com",
+    email: "doctor@mock.com",
     speciality: "Cardiology",
     experience: 12,
     fees: 150,
@@ -278,6 +278,31 @@ export const fetchDoctorById = createAsyncThunk(
         if (doc) resolve(doc);
         else rejectWithValue("Doctor not found");
       }, 500);
+});
+  }
+);
+
+/* Mock Update Availability */
+export const updateDoctorAvailabilityAsync = createAsyncThunk(
+  "doctor/updateAvailability",
+  async ({ doctorId, availability }: { doctorId: string; availability: TimeSlot[] }, { rejectWithValue }) => {
+    return new Promise<{ _id: string; availability: TimeSlot[] }>((resolve) => {
+      setTimeout(() => {
+        resolve({ _id: doctorId, availability });
+      }, 500);
+    });
+  }
+);
+
+/* Mock Update Profile */
+export const updateDoctorProfileAsync = createAsyncThunk(
+  "doctor/updateProfile",
+  async (profileData: Partial<Doctor> & { doctorId: string }, { rejectWithValue }) => {
+    return new Promise<Partial<Doctor> & { _id: string }>((resolve) => {
+      setTimeout(() => {
+        const payload = { ...profileData, _id: profileData.doctorId };
+        resolve(payload as Partial<Doctor> & { _id: string });
+      }, 500);
     });
   }
 );
@@ -347,6 +372,44 @@ const doctorSlice = createSlice({
         state.selectedDoctor = action.payload;
       })
       .addCase(fetchDoctorById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Update Doctor Availability
+      .addCase(updateDoctorAvailabilityAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateDoctorAvailabilityAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (state.selectedDoctor && state.selectedDoctor._id === action.payload._id) {
+          state.selectedDoctor = { ...state.selectedDoctor, ...action.payload } as Doctor;
+        }
+        const index = state.doctors.findIndex(d => d._id === action.payload._id);
+        if (index !== -1) {
+          state.doctors[index] = { ...state.doctors[index], ...action.payload };
+        }
+      })
+      .addCase(updateDoctorAvailabilityAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Update Doctor Profile
+      .addCase(updateDoctorProfileAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateDoctorProfileAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (state.selectedDoctor && state.selectedDoctor._id === action.payload._id) {
+          state.selectedDoctor = { ...state.selectedDoctor, ...action.payload } as Doctor;
+        }
+        const index = state.doctors.findIndex(d => d._id === action.payload._id);
+        if (index !== -1) {
+          state.doctors[index] = { ...state.doctors[index], ...action.payload };
+        }
+      })
+      .addCase(updateDoctorProfileAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

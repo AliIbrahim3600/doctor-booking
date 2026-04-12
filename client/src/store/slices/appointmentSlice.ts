@@ -41,7 +41,112 @@ const initialState: AppointmentState = {
 
 // ── Async Thunks ───────────────────────────────────────
 /* TODO: REMOVE THIS MOCK DATA LATER WHEN BACKEND IS READY */
-const MOCK_APPOINTMENTS: Appointment[] = [];
+const MOCK_APPOINTMENTS: Appointment[] = [
+  {
+    _id: "appt_1",
+    patientId: "pat_1",
+    patientName: "John Doe",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "09:00 AM",
+    status: "pending",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_2",
+    patientId: "pat_2",
+    patientName: "Emily Smith",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "11:30 AM",
+    status: "confirmed",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_3",
+    patientId: "pat_3",
+    patientName: "Michael Brown",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date(Date.now() - 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "03:00 PM",
+    status: "completed",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_4",
+    patientId: "pat_4",
+    patientName: "Jessica Taylor",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date(Date.now() + 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "10:00 AM",
+    status: "cancelled",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_5",
+    patientId: "pat_5",
+    patientName: "Alice Walker",
+    doctorId: "2",
+    doctorName: "Dr. Michael Chen",
+    speciality: "Internal Medicine",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "02:00 PM",
+    status: "pending",
+    fees: 180,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_6",
+    patientId: "pat_6",
+    patientName: "Bob Singer",
+    doctorId: "2",
+    doctorName: "Dr. Michael Chen",
+    speciality: "Internal Medicine",
+    date: new Date(Date.now() + 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "09:30 AM",
+    status: "confirmed",
+    fees: 180,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_7",
+    patientId: "pat_7",
+    patientName: "Charlie Adams",
+    doctorId: "3",
+    doctorName: "Dr. Elena Rodriguez",
+    speciality: "Pediatrics",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "10:15 AM",
+    status: "completed",
+    fees: 100,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_8",
+    patientId: "pat_8",
+    patientName: "Diana Prince",
+    doctorId: "3",
+    doctorName: "Dr. Elena Rodriguez",
+    speciality: "Pediatrics",
+    date: new Date(Date.now() + 172800000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "01:45 PM",
+    status: "pending",
+    fees: 100,
+    createdAt: new Date().toISOString()
+  }
+];
 
 /*
 export const fetchAppointments = createAsyncThunk(
@@ -131,15 +236,9 @@ export const updateAppointmentStatusAsync = createAsyncThunk(
     { id, status }: { id: string; status: AppointmentStatus },
     { rejectWithValue },
   ) => {
-    return new Promise<Appointment>((resolve, reject) => {
+    return new Promise<{ _id: string; status: AppointmentStatus }>((resolve) => {
       setTimeout(() => {
-        const appt = MOCK_APPOINTMENTS.find(a => a._id === id);
-        if (appt) {
-          appt.status = status;
-          resolve({...appt});
-        } else {
-          rejectWithValue("Appointment not found");
-        }
+        resolve({ _id: id, status });
       }, 500);
     });
   }
@@ -200,7 +299,7 @@ const appointmentSlice = createSlice({
           (apt) => apt._id === updated._id,
         );
         if (index !== -1) {
-          state.appointments[index] = updated;
+          state.appointments[index] = { ...state.appointments[index], ...updated } as Appointment;
         }
       })
       .addCase(updateAppointmentStatusAsync.rejected, (state, action) => {

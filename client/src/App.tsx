@@ -11,6 +11,7 @@ import NavBar from "./components/common/NavBar";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
 import Footer from "./components/common/Footer";
+import DoctorLayout from "./components/doctor/DoctorLayout";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -81,9 +82,11 @@ function App() {
 
               {/* Doctor Routes */}
               <Route element={<ProtectedRoute allowedRoles={["doctor"]} />}>
-                <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-                <Route path="/doctor/appointments" element={<DoctorAppointments />} />
-                <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+                <Route element={<DoctorLayout />}>
+                  <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                  <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+                  <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+                </Route>
               </Route>
 
               {/* Admin Routes */}
