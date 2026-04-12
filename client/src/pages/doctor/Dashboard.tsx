@@ -59,13 +59,13 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 fade-in">
-      <header className="flex justify-between items-center mb-10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <div>
           <h2 className="text-3xl font-extrabold font-manrope text-on-surface tracking-tight">Doctor Dashboard</h2>
           <p className="text-on-surface-variant text-sm mt-1">Welcome back, {user?.name || "Doctor"}. Here is your practice overview.</p>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full md:w-auto mt-4 md:mt-0">
+          <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors shrink-0">
             <span className="material-symbols-outlined">notifications</span>
           </button>
           <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors">
@@ -121,26 +121,26 @@ const Dashboard = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2 space-y-8">
-          <div className="bg-white rounded-xxl p-8 shadow-sm border border-outline-variant/10">
-            <div className="flex justify-between items-center mb-8">
+        <section className="lg:col-span-2 space-y-8 w-full max-w-[100vw] overflow-hidden">
+          <div className="bg-white rounded-xxl p-4 sm:p-6 lg:p-8 shadow-sm border border-outline-variant/10 w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <h3 className="text-xl font-bold font-manrope">Manage Appointments</h3>
-              <div className="flex gap-2">
-                <button onClick={() => setAppointmentFilter("Today")} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${appointmentFilter === "Today" ? "bg-surface-container-low text-on-surface" : "text-on-surface-variant hover:bg-surface-container-low"}`}>Today</button>
-                <button onClick={() => setAppointmentFilter("Week")} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${appointmentFilter === "Week" ? "bg-surface-container-low text-on-surface" : "text-on-surface-variant hover:bg-surface-container-low"}`}>Week</button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button onClick={() => setAppointmentFilter("Today")} className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${appointmentFilter === "Today" ? "bg-surface-container-low text-on-surface" : "text-on-surface-variant hover:bg-surface-container-low"}`}>Today</button>
+                <button onClick={() => setAppointmentFilter("Week")} className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${appointmentFilter === "Week" ? "bg-surface-container-low text-on-surface" : "text-on-surface-variant hover:bg-surface-container-low"}`}>Week</button>
               </div>
             </div>
             <AppointmentTable appointmentsList={filteredAppointments} isLoading={apptsLoading} />
           </div>
         </section>
 
-        <section className="space-y-8">
-          <div className="bg-white rounded-xxl p-8 shadow-sm border border-outline-variant/10">
+        <section className="space-y-8 w-full">
+          <div className="bg-white rounded-xxl p-4 sm:p-6 lg:p-8 shadow-sm border border-outline-variant/10">
             <h3 className="text-xl font-bold font-manrope mb-6">Set Availability</h3>
             <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Select Day</label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {shortDays.map((d, i) => (
                     <button 
                       key={i} 

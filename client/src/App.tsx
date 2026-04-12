@@ -43,15 +43,20 @@ const AUTH_ROUTES = ["/login", "/register"];
 
 function Layout() {
   const { pathname } = useLocation();
+
   const showNav = !AUTH_ROUTES.includes(pathname);
+  const showFooter = pathname !== "/"; 
+
   return (
     <>
       {showNav && <NavBar />}
       <Outlet />
-      {showNav && <Footer />}
+      {showFooter && <Footer year={year} />}
     </>
   );
 }
+
+const year = new Date().getFullYear();
 
 function App() {
   return (
@@ -62,7 +67,7 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<Landing  />} />
               <Route path="/doctors" element={<Doctors />} />
               <Route path="/doctor/:id" element={<DoctorProfile />} />
 

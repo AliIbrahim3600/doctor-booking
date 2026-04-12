@@ -1,4 +1,4 @@
-export default function Footer() {
+export default function Footer({year} : {year: number}) {
   return (
     <footer className="w-full rounded-t-[1.5rem] mt-20">
       <div className="w-full py-16 px-8 flex flex-col items-center gap-8 max-w-7xl mx-auto">
@@ -12,7 +12,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="h-px w-full bg-slate-200/40 dark:bg-slate-800/40"></div>
-        <div className="text-slate-500 font-body text-sm leading-relaxed">© 2024 The Clinical Atelier. All rights reserved.</div>
+        <div className="text-slate-500 font-body text-sm leading-relaxed">© {year} The Clinical Atelier. All rights reserved.</div>
       </div>
     </footer>
   );

@@ -23,7 +23,7 @@ const DoctorSidebar = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 py-8 px-4 flex flex-col gap-6 h-screen w-72 bg-slate-50 rounded-r-[1.5rem] z-40 border-r border-slate-200/50">
+    <aside className="py-8 px-4 flex flex-col gap-6 h-full w-72 bg-slate-50 md:rounded-r-[1.5rem] z-40 border-r border-slate-200/50 shadow-sm md:shadow-none">
       <div className="px-4 mb-4">
         <h1 className="text-xl font-extrabold font-manrope text-blue-800">The Clinical Atelier</h1>
       </div>

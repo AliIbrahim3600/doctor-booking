@@ -71,9 +71,9 @@ const Profile = () => {
         <p className="text-on-surface-variant text-sm">Update your personal details, credentials, and clinic information.</p>
       </header>
       
-      <div className="bg-white rounded-xxl p-8 shadow-sm border border-outline-variant/10">
-        <div className="flex items-center gap-8 mb-10 pb-10 border-b border-outline-variant/10">
-          <div className="relative">
+      <div className="bg-white rounded-xxl p-4 sm:p-6 lg:p-8 shadow-sm border border-outline-variant/10 w-full">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 sm:gap-8 mb-10 pb-10 border-b border-outline-variant/10">
+          <div className="relative mx-auto sm:mx-0">
             <img 
               alt="Doctor Portrait" 
               className="w-32 h-32 rounded-2xl object-cover shadow-sm" 
@@ -86,9 +86,9 @@ const Profile = () => {
           <div>
              <h3 className="text-xl font-bold font-manrope">{user?.name || "Doctor"}</h3>
              <p className="text-on-surface-variant text-sm mb-4">{doctorProfile?.speciality || "Speciality"} • {user?.email}</p>
-             <div className="flex gap-3">
-               <button className="px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
-               <button className="px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
+             <div className="flex flex-wrap justify-center sm:justify-start gap-3">
+               <button className="flex-1 sm:flex-none px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
+               <button className="flex-1 sm:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
              </div>
           </div>
         </div>
@@ -118,8 +118,8 @@ const Profile = () => {
              <textarea rows={4} name="about" value={formData.about} onChange={handleChange} className="px-4 py-3 rounded-xl border border-outline-variant/20 bg-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full text-sm placeholder:text-on-surface-variant transition-all text-on-surface resize-none"></textarea>
           </div>
           
-          <div className="pt-6 flex justify-end">
-            <button type="submit" disabled={isLoading} className="px-8 py-3 bg-signature-gradient text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50">
+          <div className="pt-6 flex flex-col sm:flex-row justify-end">
+            <button type="submit" disabled={isLoading} className="w-full sm:w-auto px-8 py-3 bg-signature-gradient text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50">
               {isLoading ? "Saving..." : "Save Changes"}
             </button>
           </div>

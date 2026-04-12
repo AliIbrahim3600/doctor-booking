@@ -151,6 +151,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+const year = new Date().getFullYear();
+
 /* ─── Page ──────────────────────────────────────────────── */
 
 export default function Landing() {
@@ -491,7 +493,7 @@ export default function Landing() {
           </div>
 
           <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-            <p>© 2024 Aura Health. All rights reserved.</p>
+            <p>© {year} Aura Health. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1"><FiShield className="text-emerald-500" /> HIPAA Secure</span>
               <span className="flex items-center gap-1"><FiCheckCircle className="text-blue-500" /> SSL Encrypted</span>
