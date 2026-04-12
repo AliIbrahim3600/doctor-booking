@@ -40,6 +40,115 @@ const initialState: AppointmentState = {
 };
 
 // ── Async Thunks ───────────────────────────────────────
+/* TODO: REMOVE THIS MOCK DATA LATER WHEN BACKEND IS READY */
+const MOCK_APPOINTMENTS: Appointment[] = [
+  {
+    _id: "appt_1",
+    patientId: "pat_1",
+    patientName: "John Doe",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "09:00 AM",
+    status: "pending",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_2",
+    patientId: "pat_2",
+    patientName: "Emily Smith",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "11:30 AM",
+    status: "confirmed",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_3",
+    patientId: "pat_3",
+    patientName: "Michael Brown",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date(Date.now() - 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "03:00 PM",
+    status: "completed",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_4",
+    patientId: "pat_4",
+    patientName: "Jessica Taylor",
+    doctorId: "1",
+    doctorName: "Dr. Sarah Jenkins",
+    speciality: "Cardiology",
+    date: new Date(Date.now() + 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "10:00 AM",
+    status: "cancelled",
+    fees: 150,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_5",
+    patientId: "pat_5",
+    patientName: "Alice Walker",
+    doctorId: "2",
+    doctorName: "Dr. Michael Chen",
+    speciality: "Internal Medicine",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "02:00 PM",
+    status: "pending",
+    fees: 180,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_6",
+    patientId: "pat_6",
+    patientName: "Bob Singer",
+    doctorId: "2",
+    doctorName: "Dr. Michael Chen",
+    speciality: "Internal Medicine",
+    date: new Date(Date.now() + 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "09:30 AM",
+    status: "confirmed",
+    fees: 180,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_7",
+    patientId: "pat_7",
+    patientName: "Charlie Adams",
+    doctorId: "3",
+    doctorName: "Dr. Elena Rodriguez",
+    speciality: "Pediatrics",
+    date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "10:15 AM",
+    status: "completed",
+    fees: 100,
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: "appt_8",
+    patientId: "pat_8",
+    patientName: "Diana Prince",
+    doctorId: "3",
+    doctorName: "Dr. Elena Rodriguez",
+    speciality: "Pediatrics",
+    date: new Date(Date.now() + 172800000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: "01:45 PM",
+    status: "pending",
+    fees: 100,
+    createdAt: new Date().toISOString()
+  }
+];
+
+/*
 export const fetchAppointments = createAsyncThunk(
   "appointment/fetchAppointments",
   async (_, { rejectWithValue }) => {
@@ -85,6 +194,54 @@ export const updateAppointmentStatusAsync = createAsyncThunk(
       );
     }
   },
+);
+*/
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const fetchAppointments = createAsyncThunk(
+  "appointment/fetchAppointments",
+  async (_, { rejectWithValue }) => {
+    return new Promise<Appointment[]>((resolve) => setTimeout(() => resolve([...MOCK_APPOINTMENTS]), 800));
+  }
+);
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const createAppointment = createAsyncThunk(
+  "appointment/createAppointment",
+  async (appointmentData: Partial<Appointment>, { rejectWithValue }) => {
+    return new Promise<Appointment>((resolve) => {
+      setTimeout(() => {
+        const newAppt: Appointment = {
+          _id: Math.random().toString(36).substr(2, 9),
+          patientId: appointmentData.patientId || "anon",
+          patientName: appointmentData.patientName || "Unknown",
+          doctorId: appointmentData.doctorId || "",
+          doctorName: appointmentData.doctorName || "",
+          speciality: appointmentData.speciality || "",
+          date: appointmentData.date || "",
+          time: appointmentData.time || "",
+          status: "pending",
+          fees: appointmentData.fees || 0,
+          notes: appointmentData.notes,
+          createdAt: new Date().toISOString()
+        };
+        MOCK_APPOINTMENTS.unshift(newAppt);
+        resolve(newAppt);
+      }, 1000);
+    });
+  }
+);
+/* TODO: REMOVE THIS LATER WHEN BACKEND IS READY */
+export const updateAppointmentStatusAsync = createAsyncThunk(
+  "appointment/updateStatus",
+  async (
+    { id, status }: { id: string; status: AppointmentStatus },
+    { rejectWithValue },
+  ) => {
+    return new Promise<{ _id: string; status: AppointmentStatus }>((resolve) => {
+      setTimeout(() => {
+        resolve({ _id: id, status });
+      }, 500);
+    });
+  }
 );
 
 // ── Slice ──────────────────────────────────────────────
@@ -142,7 +299,7 @@ const appointmentSlice = createSlice({
           (apt) => apt._id === updated._id,
         );
         if (index !== -1) {
-          state.appointments[index] = updated;
+          state.appointments[index] = { ...state.appointments[index], ...updated } as Appointment;
         }
       })
       .addCase(updateAppointmentStatusAsync.rejected, (state, action) => {

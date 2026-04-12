@@ -10,6 +10,8 @@ import Loader from "./components/common/Loader";
 import NavBar from "./components/common/NavBar";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
+import Footer from "./components/common/Footer";
+import DoctorLayout from "./components/doctor/DoctorLayout";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -41,14 +43,20 @@ const AUTH_ROUTES = ["/login", "/register"];
 
 function Layout() {
   const { pathname } = useLocation();
+
   const showNav = !AUTH_ROUTES.includes(pathname);
+  const showFooter = pathname !== "/"; 
+
   return (
     <>
       {showNav && <NavBar />}
       <Outlet />
+      {showFooter && <Footer year={year} />}
     </>
   );
 }
+
+const year = new Date().getFullYear();
 
 function App() {
   return (
@@ -59,7 +67,7 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<Landing  />} />
               <Route path="/doctors" element={<Doctors />} />
               <Route path="/doctor/:id" element={<DoctorProfile />} />
 
@@ -79,9 +87,11 @@ function App() {
 
               {/* Doctor Routes */}
               <Route element={<ProtectedRoute allowedRoles={["doctor"]} />}>
-                <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-                <Route path="/doctor/appointments" element={<DoctorAppointments />} />
-                <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+                <Route element={<DoctorLayout />}>
+                  <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                  <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+                  <Route path="/doctor/profile" element={<DoctorProfilePage />} />
+                </Route>
               </Route>
 
               {/* Admin Routes */}
