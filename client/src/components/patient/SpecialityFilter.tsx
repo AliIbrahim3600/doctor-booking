@@ -36,9 +36,8 @@ export default function SpecialityFilter() {
             Reset
           </button>
         </div>
-        {/* Specialty */}
         <div className="mb-8">
-          <label className="block font-headline font-semibold text-sm mb-4 text-on-surface">Specialty</label>
+          <label className="block font-headline font-semibold text-sm mb-4 text-on-surface">Speciality</label>
           <div className="flex flex-col gap-3">
             {specialities.map((spec) => (
               <label key={spec} className="flex items-center gap-3 cursor-pointer group">

@@ -18,12 +18,22 @@ const BookAppointment = () => {
   const [selectedTime, setSelectedTime] = useState<string>("10:30 AM");
 
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
+    name: "",
+    email: "",
     phone: "",
     reason: "General Checkup",
     notes: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (doctors.length === 0) {
@@ -64,13 +74,20 @@ const BookAppointment = () => {
     }
 
     try {
+      // Create a date for the current year/month based on selectedDate
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(selectedDate).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${dayStr}`;
+
       const appointmentData = {
         patientId: user?._id || "guest",
         patientName: formData.name,
         doctorId: doctor?._id || "",
         doctorName: doctor?.name || "",
         speciality: doctor?.speciality || "",
-        date: `2024-10-${selectedDate < 10 ? '0'+selectedDate : selectedDate}`,
+        date: formattedDate,
         time: selectedTime,
         fees: doctor?.fees || 0,
         notes: formData.notes

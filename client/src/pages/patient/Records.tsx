@@ -1,4 +1,3 @@
-import { useState } from "react";
 import useDataContext from "../../hooks/useDataContext";
 
 const RECORDS_MOCK = [

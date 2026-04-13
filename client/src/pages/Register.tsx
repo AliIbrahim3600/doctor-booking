@@ -29,7 +29,7 @@ interface RegForm {
   email: string;
   password: string;
   confirm: string;
-  specialty: string;
+  speciality: string;
   role: "Patient" | "Doctor";
 }
 interface RegErrors {
@@ -37,7 +37,7 @@ interface RegErrors {
   email?: string;
   password?: string;
   confirm?: string;
-  specialty?: string;
+  speciality?: string;
   general?: string;
 }
 
@@ -72,7 +72,7 @@ export default function Register() {
   const dispatch = useAppDispatch();
 
   const [form, setForm] = useState<RegForm>({
-    name: "", email: "", password: "", confirm: "", specialty: "", role: "Patient",
+    name: "", email: "", password: "", confirm: "", speciality: "", role: "Patient",
   });
   const [errors, setErrors]       = useState<RegErrors>({});
   const [touched, setTouched]     = useState<Record<string, boolean>>({});
@@ -101,9 +101,9 @@ export default function Register() {
         if (!value)              return "Please confirm your password.";
         if (value !== form.password) return "Passwords do not match.";
         break;
-      case "specialty":
+      case "speciality":
         if (form.role === "Doctor" && !value)
-          return "Please select your specialty.";
+          return "Please select your speciality.";
         break;
     }
   }
@@ -111,7 +111,7 @@ export default function Register() {
   /* ── validate whole form ── */
   function validate(): boolean {
     const fields: (keyof RegForm)[] = ["name", "email", "password", "confirm"];
-    if (form.role === "Doctor") fields.push("specialty");
+    if (form.role === "Doctor") fields.push("speciality");
 
     const e: RegErrors = {};
     for (const f of fields) {
@@ -145,16 +145,16 @@ export default function Register() {
 
   /* ── role switch clears specialty error ── */
   function handleRole(r: "Patient" | "Doctor") {
-    setForm((p) => ({ ...p, role: r, specialty: "" }));
-    setErrors((p) => ({ ...p, specialty: undefined }));
-    setTouched((p) => ({ ...p, specialty: false }));
+    setForm((p) => ({ ...p, role: r, speciality: "" }));
+    setErrors((p) => ({ ...p, speciality: undefined }));
+    setTouched((p) => ({ ...p, speciality: false }));
   }
 
   /* ── submit ── */
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const allFields: (keyof RegForm)[] = ["name", "email", "password", "confirm"];
-    if (form.role === "Doctor") allFields.push("specialty");
+    if (form.role === "Doctor") allFields.push("speciality");
     const t: Record<string, boolean> = {};
     allFields.forEach((f) => (t[f] = true));
     setTouched(t);
@@ -171,7 +171,7 @@ export default function Register() {
         role: form.role.toLowerCase(),
       };
       if (form.role === "Doctor") {
-        userData.speciality = form.specialty; // Backend expects `speciality`
+        userData.speciality = form.speciality; 
       }
 
       await dispatch(registerUser(userData)).unwrap();
@@ -375,25 +375,25 @@ export default function Register() {
             {/* Specialty (Doctor only) */}
             {form.role === "Doctor" && (
               <div>
-                <label htmlFor="reg-specialty" className="block text-sm font-medium text-slate-700 mb-1">Medical Specialty</label>
+                <label htmlFor="reg-speciality" className="block text-sm font-medium text-slate-700 mb-1">Medical Speciality</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <FiBriefcase size={16} />
                   </div>
                   <select
-                    id="reg-specialty"
-                    value={form.specialty}
-                    onChange={(e) => handleChange("specialty", e.target.value)}
-                    onBlur={() => handleBlur("specialty")}
-                    className={`${inputClass(!!errors.specialty, "pl-10")} appearance-none cursor-pointer`}
+                    id="reg-speciality"
+                    value={form.speciality}
+                    onChange={(e) => handleChange("speciality", e.target.value)}
+                    onBlur={() => handleBlur("speciality")}
+                    className={`${inputClass(!!errors.speciality, "pl-10")} appearance-none cursor-pointer`}
                   >
-                    <option value="">Select your specialty…</option>
+                    <option value="">Select your speciality…</option>
                     {SPECIALTIES.map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
                 </div>
-                <FieldError msg={errors.specialty} />
+                <FieldError msg={errors.speciality} />
               </div>
             )}
 

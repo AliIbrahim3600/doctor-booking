@@ -15,39 +15,12 @@ import {
   FiSmile,
   FiBriefcase,
 } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { fetchDoctors } from "../store/slices/doctorSlice";
 
 /* ─── Data ─────────────────────────────────────────────── */
-
-const DOCTORS = [
-  {
-    id: 1,
-    name: "Dr. Julian Verna",
-    specialty: "General Practitioner",
-    rating: 4.7,
-    reviews: 142,
-    available: "Today, 10:30 AM",
-    img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: 2,
-    name: "Dr. Sarah Chen",
-    specialty: "Neurologist",
-    rating: 5.0,
-    reviews: 98,
-    available: "Today, 02:30 PM",
-    img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
-  },
-  {
-    id: 3,
-    name: "Dr. Marcus Thorne",
-    specialty: "Orthopedic Surgeon",
-    rating: 4.8,
-    reviews: 213,
-    available: "In 2 days",
-    img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
-  },
-];
+// Remove static DOCTORS array, now fetched from Redux
 
 const SPECIALTIES = [
   { icon: FiHeart,    label: "Cardiology",  count: 42 },
@@ -156,6 +129,17 @@ const year = new Date().getFullYear();
 /* ─── Page ──────────────────────────────────────────────── */
 
 export default function Landing() {
+  const dispatch = useAppDispatch();
+  const { doctors } = useAppSelector((state) => state.doctor);
+
+  useEffect(() => {
+    if (doctors.length === 0) {
+      dispatch(fetchDoctors());
+    }
+  }, [dispatch, doctors.length]);
+
+  const featuredDoctors = doctors.slice(0, 3);
+
   return (
     <div className="bg-white text-slate-900">
 
@@ -292,33 +276,37 @@ export default function Landing() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DOCTORS.map((doc) => (
+            {featuredDoctors.map((doc) => (
               <div
-                key={doc.id}
+                key={doc._id}
                 className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition-all overflow-hidden"
               >
                 <div className="relative h-52 overflow-hidden">
                   <img
-                    src={doc.img}
+                    src={doc.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(doc.name) + "&background=random"}
                     alt={doc.name}
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
                   <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1 text-xs font-bold text-amber-500">
-                    <FiStar className="fill-amber-400" size={11} /> {doc.rating}
+                    <FiStar className="fill-amber-400" size={11} /> {doc.rating || 4.8}
                   </div>
                 </div>
 
                 <div className="p-5">
                   <h3 className="font-bold text-slate-900">{doc.name}</h3>
-                  <p className="text-xs uppercase tracking-widest text-blue-600 font-semibold mt-0.5">{doc.specialty}</p>
+                  <p className="text-xs uppercase tracking-widest text-blue-600 font-semibold mt-0.5">{doc.speciality}</p>
                   <div className="flex items-center justify-between mt-4">
                     <div>
                       <p className="text-xs text-slate-400">Availability</p>
-                      <p className="text-sm font-medium text-slate-700">{doc.available}</p>
+                      <p className="text-sm font-medium text-slate-700">
+                        {doc.availability && doc.availability.length > 0 
+                          ? `${doc.availability[0].day}, ${doc.availability[0].startTime}`
+                          : "Check Available Slots"}
+                      </p>
                     </div>
                     <Link
-                      to={`/doctor/${doc.id}`}
+                      to={`/doctor/${doc._id}`}
                       className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
                     >
                       <FiCalendar size={15} />

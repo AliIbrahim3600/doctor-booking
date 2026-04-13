@@ -20,13 +20,15 @@ const Dashboard = () => {
 
   const [appointmentFilter, setAppointmentFilter] = useState<"Today" | "Week">("Today");
 
+  const todayDate = new Date().toISOString().split('T')[0];
+
   const todayAppointments = appointments.filter(a => {
-    return a.status !== "cancelled" && a.status !== "completed";
+    return a.date === todayDate && a.status !== "cancelled" && a.status !== "completed";
   });
   
   const filteredAppointments = appointmentFilter === "Today" ? todayAppointments : appointments;
 
-  const pendingReviews = appointments.filter(a => a.status === "completed").length; 
+  const pendingAppointments = appointments.filter(a => a.status === "pending").length; 
   const uniquePatients = new Set(appointments.map(a => a.patientId)).size;
   const totalEarnings = appointments.filter(a => a.status === "completed").reduce((sum, a) => sum + (a.fees || 0), 0); 
 
@@ -101,8 +103,8 @@ const Dashboard = () => {
           colorClass="secondary"
         />
         <StatCard 
-          title="Pending Reviews" 
-          value={pendingReviews} 
+          title="Pending Approval" 
+          value={pendingAppointments} 
           icon="clinical_notes" 
           trendText="Action required"
           trendType="warning"
