@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import api from "../../utils/axios";
+import { doctorService } from "../../services/doctorService";
 
 // ── Types ──────────────────────────────────────────────
 export interface TimeSlot {
@@ -22,6 +22,7 @@ export interface Doctor {
   availability: TimeSlot[];
   isApproved: boolean;
   rating?: number;
+  numReviews?: number;
 }
 
 export interface DoctorState {
@@ -57,8 +58,8 @@ export const fetchDoctors = createAsyncThunk(
   "doctor/fetchDoctors",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/doctors");
-      return response.data; // array of Doctors
+      const data = await doctorService.getDoctors();
+      return data; // array of Doctors
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch doctors");
     }
@@ -70,8 +71,8 @@ export const fetchDoctorById = createAsyncThunk(
   "doctor/fetchDoctorById",
   async (doctorId: string, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/doctors/${doctorId}`);
-      return response.data; // single Doctor
+      const data = await doctorService.getDoctorById(doctorId);
+      return data; // single Doctor
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch doctor details");
     }
@@ -82,8 +83,8 @@ export const updateDoctorAvailabilityAsync = createAsyncThunk(
   "doctor/updateAvailability",
   async ({ doctorId, availability }: { doctorId: string; availability: TimeSlot[] }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/doctors/${doctorId}/availability`, { availability });
-      return response.data; // updated Doctor or just availability payload depending on backend
+      const data = await doctorService.updateAvailability(doctorId, availability);
+      return data; // updated Doctor or just availability payload depending on backend
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update availability");
     }
@@ -95,8 +96,8 @@ export const updateDoctorProfileAsync = createAsyncThunk(
   async (profileData: Partial<Doctor> & { doctorId: string }, { rejectWithValue }) => {
     try {
       const { doctorId, ...data } = profileData;
-      const response = await api.put(`/doctors/${doctorId}/profile`, data);
-      return response.data; // updated Doctor
+      const responseData = await doctorService.updateProfile(doctorId, data);
+      return responseData; // updated Doctor
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update profile");
     }

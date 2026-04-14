@@ -19,6 +19,7 @@ export interface IDoctor extends Document {
   availability: ITimeSlot[];
   isApproved: boolean;
   rating: number;
+  numReviews: number;
 }
 
 const timeSlotSchema = new Schema<ITimeSlot>(
@@ -104,6 +105,10 @@ const doctorSchema = new Schema<IDoctor>(
       default: 0,
       min: 0,
       max: 5,
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

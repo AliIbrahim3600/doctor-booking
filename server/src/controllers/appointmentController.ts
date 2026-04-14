@@ -99,3 +99,79 @@ export const updateAppointmentStatus = async (req: AuthRequest, res: Response): 
     res.status(500).json({ message: error.message || "Failed to update status" });
   }
 };
+
+// @desc    Rate an appointment
+// @route   PATCH /api/appointments/:id/rate
+// @access  Private (Patient)
+export const rateAppointment = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { rating, review } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      res.status(400).json({ message: "Please provide a rating between 1 and 5" });
+      return;
+    }
+
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      res.status(404).json({ message: "Appointment not found" });
+      return;
+    }
+
+    // Check if the appointment belongs to the patient
+    if (appointment.patientId.toString() !== req.user?._id.toString()) {
+      res.status(403).json({ message: "Unauthorized to rate this appointment" });
+      return;
+    }
+
+    // Only completed appointments can be rated
+    if (appointment.status !== "completed") {
+      res.status(400).json({ message: "Only completed appointments can be rated" });
+      return;
+    }
+
+    // Check if appointment is already rated
+    if (appointment.rating) {
+      res.status(400).json({ message: "Appointment is already rated" });
+      return;
+    }
+
+    // Update appointment
+    appointment.rating = rating;
+    appointment.review = review || "";
+    await appointment.save();
+
+    // Update doctor average rating
+    const doctor = await Doctor.findById(appointment.doctorId);
+    if (doctor) {
+      const currentTotalRating = (doctor.rating || 0) * (doctor.numReviews || 0);
+      doctor.numReviews = (doctor.numReviews || 0) + 1;
+      doctor.rating = (currentTotalRating + rating) / doctor.numReviews;
+      await doctor.save();
+    }
+
+    res.json(appointment);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Failed to submit rating" });
+  }
+};
+
+// @desc    Get reviews for a doctor
+// @route   GET /api/doctors/:id/reviews
+// @access  Public
+export const getDoctorReviews = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const reviews = await Appointment.find({
+      doctorId: req.params.id,
+      rating: { $exists: true }
+    })
+    .select("patientName rating review date createdAt")
+    .sort({ createdAt: -1 });
+
+    res.json(reviews);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Failed to fetch reviews" });
+  }
+};
+

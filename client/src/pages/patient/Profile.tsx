@@ -1,38 +1,68 @@
-import { useState } from "react";
-import { useAppSelector } from "../../store/store";
+import { useState, useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "../../store/store";
+import { updatePatientProfileAsync, clearAuthError, updateProfile } from "../../store/slices/authSlice";
+import Swal from "sweetalert2";
 
 const PatientProfile = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { user, isLoading, error } = useAppSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
-    name: user?.name || "The Clinical Atelier",
-    email: user?.email || "patient@example.com",
-    phone: "+1 (555) 000-0000",
-    dob: "1992-05-15",
-    gender: "Other",
-    bloodGroup: "O+",
-    address: "123 Medical Plaza, Apartment 4B",
-    city: "San Francisco",
-    emergencyContact: "John Doe (+1 555-1234)",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
   });
 
-  const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+
+  const handleAvatarUpdate = () => {
+    const newUrl = prompt("Please enter the URL for your profile picture:", user?.avatar || "");
+    if (newUrl !== null) {
+      dispatch(updatePatientProfileAsync({ avatar: newUrl }));
+      dispatch(updateProfile({ avatar: newUrl }));
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        email: user.email,
+        phone: user.phone || "",
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (saveMessage) setSaveMessage("");
+    if (error) dispatch(clearAuthError());
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      setSaveMessage("Profile updated successfully!");
-    }, 1000);
+    try {
+      await dispatch(updatePatientProfileAsync({ name: formData.name, phone: formData.phone })).unwrap();
+      dispatch(updateProfile({ name: formData.name, phone: formData.phone }));
+      
+      Swal.fire({
+        title: "Success",
+        text: "Your profile has been updated.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff',
+        customClass: { popup: 'rounded-3xl' }
+      });
+    } catch (err: any) {
+      Swal.fire({
+        title: "Update Failed",
+        text: err || "Could not save changes.",
+        icon: "error",
+        background: '#fff',
+        customClass: { popup: 'rounded-3xl' }
+      });
+    }
   };
 
   return (
@@ -55,23 +85,12 @@ const PatientProfile = () => {
                         className="w-full h-full object-cover"
                       />
                   </div>
-                  <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary text-white rounded-xl shadow-lg flex items-center justify-center border-2 border-white hover:opacity-90 transition-opacity cursor-pointer">
+                  <button onClick={handleAvatarUpdate} className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary text-white rounded-xl shadow-lg flex items-center justify-center border-2 border-white hover:opacity-90 transition-opacity cursor-pointer">
                      <span className="material-symbols-outlined text-[18px]">edit</span>
                   </button>
                </div>
-               <h2 className="font-headline font-extrabold text-xl text-on-surface mb-1">{formData.name}</h2>
+               <h2 className="font-headline font-extrabold text-xl text-on-surface mb-1">{user?.name}</h2>
                <p className="text-sm font-bold text-primary mb-6 uppercase tracking-widest">{user?.role || "Patient"}</p>
-               
-               <div className="grid grid-cols-2 gap-4 w-full">
-                  <div className="bg-surface-container-low p-3 rounded-2xl">
-                     <p className="text-[10px] font-bold text-outline-variant uppercase mb-1">Blood Group</p>
-                     <p className="font-headline font-extrabold text-on-surface">{formData.bloodGroup}</p>
-                  </div>
-                  <div className="bg-surface-container-low p-3 rounded-2xl">
-                     <p className="text-[10px] font-bold text-outline-variant uppercase mb-1">Age</p>
-                     <p className="font-headline font-extrabold text-on-surface">31 Yrs</p>
-                  </div>
-               </div>
             </div>
         </div>
 
@@ -83,7 +102,13 @@ const PatientProfile = () => {
                  Personal Details
               </h3>
               
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSave}>
+                 {error && (
+                   <div className="p-3 bg-red-50 text-red-700 text-sm font-bold rounded-lg mb-4">
+                     {error}
+                   </div>
+                 )}
+
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1.5">
                        <label className="text-[10px] font-extrabold text-outline-variant uppercase tracking-widest px-1">Full Name</label>
@@ -100,9 +125,9 @@ const PatientProfile = () => {
                        <input 
                          type="email" 
                          name="email"
+                         readOnly
                          value={formData.email}
-                         onChange={handleInputChange}
-                         className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
+                         className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none opacity-70 cursor-not-allowed font-medium"
                        />
                     </div>
                  </div>
@@ -118,66 +143,30 @@ const PatientProfile = () => {
                          className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
                        />
                     </div>
-                    <div className="space-y-1.5">
-                       <label className="text-[10px] font-extrabold text-outline-variant uppercase tracking-widest px-1">Date of Birth</label>
-                       <input 
-                         type="date" 
-                         name="dob"
-                         value={formData.dob}
-                         onChange={handleInputChange}
-                         className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
-                       />
-                    </div>
-                 </div>
-
-                 <div className="space-y-1.5 pt-4">
-                    <h3 className="font-headline font-bold text-lg text-on-surface mb-4 flex items-center gap-2">
-                       <span className="material-symbols-outlined text-primary">location_on</span>
-                       Address & Security
-                    </h3>
-                    <div className="space-y-6">
-                       <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-outline-variant uppercase tracking-widest px-1">Residential Address</label>
-                          <input 
-                            type="text" 
-                            name="address"
-                            value={formData.address}
-                            onChange={handleInputChange}
-                            className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
-                          />
-                       </div>
-                       <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-outline-variant uppercase tracking-widest px-1">Emergency Contact</label>
-                          <input 
-                            type="text" 
-                            name="emergencyContact"
-                            value={formData.emergencyContact}
-                            onChange={handleInputChange}
-                            className="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
-                          />
-                       </div>
-                    </div>
                  </div>
 
                  <div className="pt-8 flex flex-col md:flex-row gap-4 items-center">
                     <button 
                       type="submit" 
-                      onClick={handleSave}
-                      disabled={isSaving}
+                      disabled={isLoading}
                       className="w-full md:flex-1 bg-primary text-white py-4 rounded-xl font-headline font-extrabold shadow-lg hover:opacity-95 transition-opacity active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                       {isSaving ? "Saving..." : "Save Changes"}
+                       {isLoading ? "Saving..." : "Save Changes"}
                     </button>
                     <button 
                       type="button" 
-                      onClick={() => setFormData({ ...formData, name: user?.name || "", email: user?.email || "" })}
+                      onClick={() => {
+                        setFormData({ name: user?.name || "", email: user?.email || "", phone: user?.phone || "" });
+                        setSaveMessage("");
+                        dispatch(clearAuthError());
+                      }}
                       className="w-full md:flex-1 border border-outline-variant text-on-surface-variant py-4 rounded-xl font-headline font-extrabold hover:bg-surface-container transition-colors cursor-pointer"
                     >
                        Reset Form
                     </button>
                  </div>
                  {saveMessage && (
-                   <div className="mt-4 p-3 bg-green-50 text-green-700 text-sm font-bold rounded-lg text-center animate-pulse">
+                   <div className="mt-4 p-3 bg-green-50 text-green-700 text-sm font-bold rounded-lg text-center animate-[fadeIn_0.5s_ease]">
                       {saveMessage}
                    </div>
                  )}

@@ -138,9 +138,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=Sarah+Jenkins&background=0D8ABC&color=fff",
         isApproved: true,
         availability: [
-          { day: "Monday", startTime: "09:00 AM", endTime: "05:00 PM" },
-          { day: "Wednesday", startTime: "09:00 AM", endTime: "05:00 PM" },
-          { day: "Friday", startTime: "09:00 AM", endTime: "01:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
       {
@@ -155,8 +157,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=Michael+Chen&background=2E86AB&color=fff",
         isApproved: true,
         availability: [
-          { day: "Tuesday", startTime: "10:00 AM", endTime: "04:00 PM" },
-          { day: "Thursday", startTime: "10:00 AM", endTime: "04:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
       {
@@ -171,8 +176,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=Elena+Rodriguez&background=A23B72&color=fff",
         isApproved: true,
         availability: [
-          { day: "Monday", startTime: "11:00 AM", endTime: "06:00 PM" },
-          { day: "Friday", startTime: "11:00 AM", endTime: "06:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
       {
@@ -187,7 +195,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=Kevin+Thorne&background=F18F01&color=fff",
         isApproved: true,
         availability: [
-          { day: "Wednesday", startTime: "09:00 AM", endTime: "03:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
       {
@@ -202,8 +214,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=Rachel+Adams&background=C73E1D&color=fff",
         isApproved: true,
         availability: [
-          { day: "Tuesday", startTime: "10:00 AM", endTime: "03:00 PM" },
-          { day: "Thursday", startTime: "10:00 AM", endTime: "03:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
       {
@@ -218,7 +233,11 @@ async function seed(): Promise<void> {
         avatar: "https://ui-avatars.com/api/?name=David+Smith&background=3B1F2B&color=fff",
         isApproved: false,
         availability: [
-          { day: "Monday", startTime: "08:00 AM", endTime: "12:00 PM" },
+          { day: 'Monday', startTime: '09:00 AM', endTime: '04:00 PM' },
+          { day: 'Tuesday', startTime: '10:00 AM', endTime: '05:00 PM' },
+          { day: 'Wednesday', startTime: '09:00 AM', endTime: '03:00 PM' },
+          { day: 'Thursday', startTime: '11:00 AM', endTime: '06:00 PM' },
+          { day: 'Friday', startTime: '08:00 AM', endTime: '02:00 PM' }
         ],
       },
     ]);

@@ -1,5 +1,6 @@
 import { Response } from "express";
 import Doctor from "../models/Doctor";
+import User from "../models/User";
 import { AuthRequest } from "../middleware/auth";
 
 // @desc    Get all doctors (approved only for public)
@@ -83,6 +84,18 @@ export const updateDoctorProfile = async (req: AuthRequest, res: Response): Prom
     if (!doctor) {
       res.status(404).json({ message: "Doctor not found" });
       return;
+    }
+
+    // SYNC: Update the associated User document
+    if (doctor.userId) {
+      const userUpdates: Record<string, any> = {};
+      if (updates.name) userUpdates.name = updates.name;
+      if (updates.avatar) userUpdates.avatar = updates.avatar;
+      if (updates.phone) userUpdates.phone = updates.phone;
+
+      if (Object.keys(userUpdates).length > 0) {
+        await User.findByIdAndUpdate(doctor.userId, userUpdates);
+      }
     }
 
     res.json(doctor);

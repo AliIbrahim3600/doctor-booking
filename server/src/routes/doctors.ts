@@ -6,6 +6,7 @@ import {
   updateDoctorProfile,
   approveDoctor,
 } from "../controllers/doctorController";
+import { getDoctorReviews } from "../controllers/appointmentController";
 import { protect, authorize } from "../middleware/auth";
 
 const router = Router();
@@ -13,6 +14,7 @@ const router = Router();
 // Public
 router.get("/", getDoctors);
 router.get("/:id", getDoctorById);
+router.get("/:id/reviews", getDoctorReviews);
 
 // Doctor only
 router.put("/:id/availability", protect, authorize("doctor"), updateAvailability);

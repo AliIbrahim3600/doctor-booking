@@ -35,9 +35,11 @@ export const register = async (req: AuthRequest, res: Response): Promise<void> =
         name: user.name,
         email: user.email,
         speciality: req.body.speciality || "General Physician",
-        experience: 0,
-        fees: 0,
-        isApproved: false,
+        experience: 5,
+        fees: 50,
+        about: "Dedicated medical professional committed to providing high-quality patient care and specialized treatment.",
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=003d9b&color=fff`,
+        isApproved: true,
       });
     }
 
@@ -120,6 +122,49 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       phone: user.phone,
     });
   } catch (error: any) {
+    res.status(500).json({ message: error.message || "Server error" });
+  }
+};
+
+// @desc    Update current user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    user.name = req.body.name || user.name;
+    user.phone = req.body.phone || user.phone;
+    if (req.body.avatar !== undefined) {
+       user.avatar = req.body.avatar;
+    }
+
+    const updatedUser = await user.save();
+
+    // SYNC: If user is a doctor, update overlapping fields in Doctor model
+    if (updatedUser.role === "doctor") {
+      const doctorUpdates: Record<string, any> = {
+        name: updatedUser.name,
+        phone: updatedUser.phone,
+        avatar: updatedUser.avatar
+      };
+      await Doctor.findOneAndUpdate({ userId: updatedUser._id }, doctorUpdates);
+    }
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      avatar: updatedUser.avatar,
+      phone: updatedUser.phone,
+    });
+  } catch (error: any) {
+    console.error("Update profile error:", error);
     res.status(500).json({ message: error.message || "Server error" });
   }
 };

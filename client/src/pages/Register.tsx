@@ -61,9 +61,9 @@ function inputClass(hasError: boolean, extraPad = "") {
 }
 
 const SPECIALTIES = [
-  "General Practitioner", "Cardiologist", "Neurologist",
-  "Orthopedic Surgeon", "Dermatologist", "Ophthalmologist",
-  "Pediatrician", "Psychiatrist", "Radiologist", "Other",
+  "General", "Cardiology", "Internal Medicine", "Neurology",
+  "Orthopedics", "Dermatology", "Ophthalmology", "Pediatrics",
+  "Dentistry", "Psychiatry", "Other",
 ];
 
 /* ─── Page ────────────────────────────────────────────── */

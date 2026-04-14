@@ -11,6 +11,8 @@ export interface IAppointment extends Document {
   status: "pending" | "confirmed" | "completed" | "cancelled";
   fees: number;
   notes: string;
+  rating?: number;
+  review?: string;
 }
 
 const appointmentSchema = new Schema<IAppointment>(
@@ -55,6 +57,15 @@ const appointmentSchema = new Schema<IAppointment>(
       required: true,
     },
     notes: {
+      type: String,
+      default: "",
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+    },
+    review: {
       type: String,
       default: "",
     },

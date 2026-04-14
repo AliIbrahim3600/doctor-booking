@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import api from "../../utils/axios";
+import { authService } from "../../services/authService";
 
 
 // ── Types ──────────────────────────────────────────────
@@ -37,9 +37,9 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials: Record<string, string>, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/login", credentials);
-      localStorage.setItem("token", response.data.token);
-      return response.data; // { user, token }
+      const data = await authService.login(credentials);
+      localStorage.setItem("token", data.token);
+      return data; // { user, token }
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
@@ -50,9 +50,9 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData: Record<string, string>, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/register", userData);
-      localStorage.setItem("token", response.data.token);
-      return response.data; // { user, token }
+      const data = await authService.register(userData);
+      localStorage.setItem("token", data.token);
+      return data; // { user, token }
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Registration failed");
     }
@@ -63,11 +63,23 @@ export const loadUser = createAsyncThunk(
   "auth/loadUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/auth/me");
-      return response.data; // user object
+      const data = await authService.getMe();
+      return data; // user object
     } catch (error: any) {
       localStorage.removeItem("token");
       return rejectWithValue(error.response?.data?.message || "Failed to load user");
+    }
+  }
+);
+
+export const updatePatientProfileAsync = createAsyncThunk(
+  "auth/updateProfile",
+  async (profileData: Record<string, string>, { rejectWithValue }) => {
+    try {
+      const data = await authService.updateProfile(profileData);
+      return data; // updated user object
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
     }
   }
 );
@@ -146,6 +158,19 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
+        state.error = action.payload as string;
+      })
+      // Update Patient Profile
+      .addCase(updatePatientProfileAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updatePatientProfileAsync.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updatePatientProfileAsync.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
       });
   },

@@ -14,8 +14,8 @@ const BookAppointment = () => {
   const { doctors, isLoading: isDoctorLoading } = useAppSelector((state) => state.doctor);
   const { user } = useAppSelector((state) => state.auth);
 
-  const [selectedDate, setSelectedDate] = useState<number>(10);
-  const [selectedTime, setSelectedTime] = useState<string>("10:30 AM");
+  const [selectedDate, setSelectedDate] = useState<number>(new Date().getDate());
+  const [selectedTime, setSelectedTime] = useState<string>("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -114,10 +114,50 @@ const BookAppointment = () => {
     }
   };
 
-  const calendarDays = Array.from({ length: 31 }, (_, i) => i + 1);
-  const availableSlots = [
-    "09:00 AM", "10:30 AM", "11:15 AM", "12:00 PM", "02:30 PM", "04:00 PM"
-  ];
+  // ─── Dynamic Calendar & Slot Logic ───
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  
+  const monthName = now.toLocaleString("default", { month: "long" });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0(Sun) - 6(Sat)
+  const startOffset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // map so Mon=0, Sun=6
+  const offsetCells = Array.from({ length: startOffset }, (_, i) => i);
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  const parseTimeString = (timeStr: string) => {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (modifier === 'PM' && hours < 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+    return hours * 60 + minutes;
+  };
+
+  const formatTimeFromMins = (mins: number) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    const mod = h >= 12 ? 'PM' : 'AM';
+    const displayH = h % 12 || 12;
+    return `${String(displayH).padStart(2, '0')}:${String(m).padStart(2, '0')} ${mod}`;
+  };
+
+  let dynamicSlots: string[] = [];
+  if (doctor && selectedDate) {
+    const selectedDateObj = new Date(year, month, selectedDate);
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = daysOfWeek[selectedDateObj.getDay()];
+    
+    const dayAvailability = doctor.availability?.find(a => a.day === dayName);
+    if (dayAvailability) {
+      let start = parseTimeString(dayAvailability.startTime);
+      let end = parseTimeString(dayAvailability.endTime);
+      while (start + 45 <= end) {
+        dynamicSlots.push(formatTimeFromMins(start));
+        start += 45;
+      }
+    }
+  }
 
   return (
     <main className="pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
@@ -141,7 +181,7 @@ const BookAppointment = () => {
               
               <div className="flex items-center gap-2 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-xs font-semibold">
                 <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                {doctor?.rating || 4.8} (124 Reviews)
+                {doctor?.rating?.toFixed(1) || "4.8"} ({doctor?.numReviews || 0} Reviews)
               </div>
             </div>
             
@@ -205,10 +245,10 @@ const BookAppointment = () => {
               {/* Date Picker */}
               <div>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold text-on-surface">October 2024</span>
-                  <div className="flex gap-2">
-                    <button className="material-symbols-outlined p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors cursor-pointer">chevron_left</button>
-                    <button className="material-symbols-outlined p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors cursor-pointer">chevron_right</button>
+                  <span className="font-semibold text-on-surface">{monthName} {year}</span>
+                  <div className="flex gap-2 border border-outline-variant/20 rounded opacity-50 pointer-events-none">
+                    <button type="button" className="material-symbols-outlined p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors">chevron_left</button>
+                    <button type="button" className="material-symbols-outlined p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors">chevron_right</button>
                   </div>
                 </div>
                 
@@ -217,20 +257,28 @@ const BookAppointment = () => {
                 </div>
                 
                 <div className="grid grid-cols-7 gap-1 text-center">
-                  <span className="p-2 text-sm text-outline/40">28</span>
-                  <span className="p-2 text-sm text-outline/40">29</span>
-                  <span className="p-2 text-sm text-outline/40">30</span>
-                  
-                  {calendarDays.map((day) => (
-                    <button 
-                      key={day}
-                      type="button"
-                      onClick={() => setSelectedDate(day)}
-                      className={`p-2 text-sm rounded-lg transition-colors cursor-pointer ${selectedDate === day ? 'bg-primary text-on-primary font-bold shadow-md' : 'hover:bg-surface-container'}`}
-                    >
-                      {day}
-                    </button>
+                  {offsetCells.map((_, i) => (
+                    <span key={`empty-${i}`} className="p-2 text-sm opacity-0">...</span>
                   ))}
+                  
+                  {calendarDays.map((day) => {
+                    const isPast = day < now.getDate() && month === now.getMonth() && year === now.getFullYear();
+                    return (
+                      <button 
+                        key={day}
+                        type="button"
+                        disabled={isPast}
+                        onClick={() => { setSelectedDate(day); setSelectedTime(""); }}
+                        className={`p-2 text-sm rounded-lg transition-colors ${
+                          isPast ? 'text-outline/40 cursor-not-allowed' :
+                          selectedDate === day ? 'bg-primary text-on-primary font-bold shadow-md cursor-pointer' : 
+                          'hover:bg-surface-container cursor-pointer text-on-surface font-medium'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -238,21 +286,25 @@ const BookAppointment = () => {
               <div>
                 <p className="font-semibold text-on-surface mb-4">Available Slots</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {availableSlots.map((slot, idx) => (
-                    <button 
-                      key={idx}
-                      type="button"
-                      onClick={() => slot !== "12:00 PM" && setSelectedTime(slot)} // Simulate booked slot
-                      disabled={slot === "12:00 PM"}
-                      className={`py-3 px-2 text-sm font-medium rounded-xl transition-all ${
-                        slot === "12:00 PM" ? 'bg-surface-container-low text-outline cursor-not-allowed opacity-50' :
-                        selectedTime === slot ? 'bg-primary text-on-primary font-bold shadow-md' : 
-                        'border border-outline-variant/30 hover:bg-primary-fixed/20 hover:border-primary text-on-surface cursor-pointer'
-                      }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+                  {dynamicSlots.length === 0 ? (
+                    <div className="col-span-full py-6 text-center text-sm font-bold text-on-surface-variant bg-surface-container-lowest border border-outline-variant/20 rounded-xl">
+                      Doctor unavailable on this date.
+                    </div>
+                  ) : (
+                    dynamicSlots.map((slot, idx) => (
+                      <button 
+                        key={idx}
+                        type="button"
+                        onClick={() => setSelectedTime(slot)}
+                        className={`py-3 px-2 text-sm font-medium rounded-xl transition-all cursor-pointer ${
+                          selectedTime === slot ? 'bg-primary text-on-primary font-bold shadow-md' : 
+                          'border border-outline-variant/40 hover:bg-primary-fixed/20 hover:border-primary text-on-surface'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    ))
+                  )}
                 </div>
                 <p className="text-[10px] text-on-surface-variant mt-6 uppercase tracking-widest font-bold">Slot Duration: 45 Mins</p>
               </div>

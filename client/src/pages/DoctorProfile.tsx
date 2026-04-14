@@ -2,19 +2,42 @@ import { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { fetchDoctors } from "../store/slices/doctorSlice";
+import { doctorService } from "../services/doctorService";
 import Loader from "../components/common/Loader";
+import { useState } from "react";
+import { FiStar } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { doctors, isLoading } = useAppSelector((state) => state.doctor);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (doctors.length === 0) {
       dispatch(fetchDoctors());
     }
   }, [dispatch, doctors.length]);
+
+  useEffect(() => {
+    if (id) {
+      const getReviews = async () => {
+        setReviewsLoading(true);
+        try {
+          const data = await doctorService.getDoctorReviews(id);
+          setReviews(data);
+        } catch (err) {
+          console.error("Failed to fetch reviews", err);
+        } finally {
+          setReviewsLoading(false);
+        }
+      };
+      getReviews();
+    }
+  }, [id]);
 
   const doctor = doctors.find((d) => d._id === id);
 
@@ -57,7 +80,8 @@ const DoctorProfile = () => {
             <div className="absolute -bottom-4 -right-4 bg-white p-3 rounded-2xl shadow-lg border border-outline-variant/10">
                 <div className="flex items-center gap-1.5 text-amber-500 font-bold">
                     <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                    <span>{doctor?.rating || 4.8}</span>
+                    <span>{doctor?.rating?.toFixed(1) || "4.8"}</span>
+                    <span className="text-[11px] text-on-surface-variant font-medium ml-0.5">({doctor?.numReviews || 0})</span>
                 </div>
             </div>
           </div>
@@ -109,8 +133,14 @@ const DoctorProfile = () => {
                   <span className="material-symbols-outlined">calendar_month</span>
                   Book Appointment
                </Link>
-               <button className="w-full sm:w-auto px-8 py-4 border-2 border-outline-variant/50 text-on-surface rounded-2xl font-bold hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                  <span className="material-symbols-outlined">share</span>
+               <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  Swal.fire({ title: "Link Copied!", text: "Doctor profile link has been copied to your clipboard.", icon: "success", timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-3xl' } });
+                }} 
+                className="w-full sm:w-auto px-8 py-4 border-2 border-outline-variant/50 text-on-surface rounded-2xl font-bold hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2 cursor-pointer"
+               >
+                  <span className="material-symbols-outlined text-[20px]">share</span>
                   Share Profile
                </button>
             </div>
@@ -118,9 +148,50 @@ const DoctorProfile = () => {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
         {/* Left Col: Details */}
         <div className="lg:col-span-8 space-y-12">
+          {/* Patient Reviews */}
+          <section>
+            <h3 className="text-2xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">reviews</span>
+                Patient Feedback
+            </h3>
+            
+            <div className="space-y-6">
+                {reviewsLoading ? (
+                    <div className="flex justify-center py-10"><Loader /></div>
+                ) : reviews.length > 0 ? (
+                    reviews.map((rev, idx) => (
+                        <div key={idx} className="bg-white rounded-[2rem] p-8 border border-outline-variant/10 shadow-sm transition-all hover:shadow-md">
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <h4 className="font-bold text-on-surface">{rev.patientName}</h4>
+                                    <p className="text-xs text-on-surface-variant font-medium">Verified Patient • {new Date(rev.createdAt || rev.date).toLocaleDateString()}</p>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-amber-500">
+                                    <div className="flex gap-0.5">
+                                        {[1, 2, 3, 4, 5].map((s) => (
+                                            <FiStar key={s} size={14} className={s <= rev.rating ? "fill-amber-500" : "text-slate-200"} />
+                                        ))}
+                                    </div>
+                                    <span className="text-sm font-bold text-on-surface ml-2">{rev.rating}.0</span>
+                                </div>
+                            </div>
+                            <p className="text-on-surface-variant leading-relaxed italic text-sm">
+                                "{rev.review || "Excellent care and professional service."}"
+                            </p>
+                        </div>
+                    ))
+                ) : (
+                    <div className="bg-surface-container-low rounded-[2rem] p-12 text-center border border-dashed border-outline-variant/30">
+                        <span className="material-symbols-outlined text-4xl text-outline-variant mb-3">rate_review</span>
+                        <p className="text-on-surface-variant font-medium">No reviews yet. Be the first to share your experience!</p>
+                    </div>
+                )}
+            </div>
+          </section>
+
           {/* Biography */}
           <section>
              <h3 className="text-2xl font-headline font-bold text-on-surface mb-6 flex items-center gap-2">

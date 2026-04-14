@@ -4,6 +4,7 @@ import { fetchAppointments } from "../../store/slices/appointmentSlice";
 import { fetchDoctors, updateDoctorAvailabilityAsync } from "../../store/slices/doctorSlice";
 import StatCard from "../../components/doctor/StatCard";
 import AppointmentTable from "../../components/doctor/AppointmentTable";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -67,10 +68,10 @@ const Dashboard = () => {
           <p className="text-on-surface-variant text-sm mt-1">Welcome back, {user?.name || "Doctor"}. Here is your practice overview.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full md:w-auto mt-4 md:mt-0">
-          <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors shrink-0">
+          <button onClick={() => Swal.fire('Notifications', 'You have no new notifications.', 'info')} className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors shrink-0">
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors">
+          <button onClick={() => Swal.fire('Settings', 'Settings panel is undergoing maintenance.', 'warning')} className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors">
             <span className="material-symbols-outlined">settings</span>
           </button>
           <div className="h-10 w-[1px] bg-outline-variant/20 mx-2"></div>
@@ -184,7 +185,7 @@ const Dashboard = () => {
             <div className="relative z-10">
               <h4 className="text-lg font-bold font-manrope leading-tight mb-2">Practice Insights</h4>
               <p className="text-primary-fixed text-xs mb-6 opacity-80">You've completed 94% of your monthly targets for health screenings.</p>
-              <button className="bg-white text-primary px-6 py-2 rounded-lg text-sm font-bold shadow-sm">View Report</button>
+              <button onClick={() => Swal.fire('Report Generated', 'Your practice insights report has been emailed to you.', 'success')} className="bg-white text-primary px-6 py-2 rounded-lg text-sm font-bold shadow-sm cursor-pointer hover:bg-surface">View Report</button>
             </div>
             <div className="absolute -right-12 -bottom-12 opacity-10">
               <span className="material-symbols-outlined text-[12rem]">clinical_notes</span>

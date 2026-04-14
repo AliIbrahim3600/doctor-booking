@@ -107,7 +107,7 @@ export default function NavBar() {
                 isHash ? (
                   <a
                     key={to}
-                    href={to}
+                    href={"/" + to}
                     className="relative text-sm font-medium py-1 text-slate-600 hover:text-blue-600 transition-colors duration-150 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:rounded-full after:bg-blue-600 after:w-0 hover:after:w-full after:transition-all after:duration-200"
                   >
                     {label}
@@ -247,7 +247,7 @@ export default function NavBar() {
               isHash ? (
                 <a
                   key={to}
-                  href={to}
+                  href={"/" + to}
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                 >

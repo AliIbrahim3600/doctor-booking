@@ -9,11 +9,17 @@ export default function SpecialityFilter() {
   const currentRating = filters.minRating;
 
   const specialities = [
+    "General",
     "Cardiology",
-    "Dermatology",
+    "Internal Medicine",
     "Neurology",
+    "Orthopedics",
+    "Dermatology",
+    "Ophthalmology",
     "Pediatrics",
-    "Internal Medicine"
+    "Dentistry",
+    "Psychiatry",
+    "Other"
   ];
 
   const handleToggle = (spec: string) => {

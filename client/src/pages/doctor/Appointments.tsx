@@ -57,10 +57,25 @@ const Appointments = () => {
                 className="bg-transparent border-none outline-none text-sm w-full text-on-surface" 
               />
            </div>
-           <button className="flex items-center justify-center gap-2 px-4 py-2 border border-outline-variant/20 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container transition-colors sm:w-auto">
-              <span className="material-symbols-outlined text-sm">filter_list</span>
-              More Filters
-           </button>
+            <button 
+              onClick={() => {
+                const csvHeader = "Patient,Speciality,Status,Date,Time\n";
+                const csvRows = filteredAppointments.map(a => `${a.patientName},${a.speciality},${a.status},${a.date},${a.time}`).join("\n");
+                const blob = new Blob([csvHeader + csvRows], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', 'appointments_export.csv');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }} 
+              className="flex items-center justify-center gap-2 px-4 py-2 border border-outline-variant/20 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container transition-colors sm:w-auto cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-sm">download</span>
+              Export List
+            </button>
         </div>
         
         <AppointmentTable appointmentsList={filteredAppointments} isLoading={isLoading} />

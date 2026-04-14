@@ -17,7 +17,7 @@ import {
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import { fetchDoctors } from "../store/slices/doctorSlice";
+import { fetchDoctors, setSpecialityFilter } from "../store/slices/doctorSlice";
 
 /* ─── Data ─────────────────────────────────────────────── */
 // Remove static DOCTORS array, now fetched from Redux
@@ -232,7 +232,7 @@ export default function Landing() {
       </section>
 
       {/* ══════════════════ SPECIALTIES ══════════════════ */}
-      <section className="bg-slate-50 py-20">
+      <section id="specialties" className="bg-slate-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">Browse by Category</p>
@@ -243,6 +243,7 @@ export default function Landing() {
               <Link
                 key={label}
                 to="/doctors"
+                onClick={() => dispatch(setSpecialityFilter(label))}
                 className="group flex flex-col items-center gap-3 bg-white rounded-2xl px-4 py-6 border border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all"
               >
                 <div className="w-12 h-12 rounded-xl bg-blue-50 group-hover:bg-blue-600 flex items-center justify-center transition-colors">
@@ -320,7 +321,7 @@ export default function Landing() {
       </section>
 
       {/* ══════════════════ HOW IT WORKS ══════════════════ */}
-      <section className="bg-slate-50 py-20">
+      <section id="how-it-works" className="bg-slate-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">Simple Process</p>
@@ -384,8 +385,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ FAQ ══════════════════ */}
-      <section className="bg-slate-50 py-20">
+      {/* ══════════════════ FAQ/ABOUT ══════════════════ */}
+      <section id="about" className="bg-slate-50 py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-2">Support</p>

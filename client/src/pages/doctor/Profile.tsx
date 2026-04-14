@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { updateProfile } from "../../store/slices/authSlice";
 import { updateDoctorProfileAsync, fetchDoctors } from "../../store/slices/doctorSlice";
+import Swal from "sweetalert2";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
@@ -44,25 +45,58 @@ const Profile = () => {
     }));
   };
 
+  const handleAvatarUpdate = () => {
+    const newUrl = prompt("Please enter the URL for your profile picture:", user?.avatar || "");
+    if (newUrl !== null) {
+      if (!doctorProfile?._id) return;
+      dispatch(updateDoctorProfileAsync({
+        doctorId: doctorProfile._id,
+        avatar: newUrl
+      }));
+      dispatch(updateProfile({ avatar: newUrl }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!doctorProfile?._id) return;
 
-    // Update the Doctor Slice natively and await it
-    await dispatch(updateDoctorProfileAsync({
-      doctorId: doctorProfile._id,
-      name: formData.name,
-      email: formData.email,
-      speciality: formData.speciality,
-      experience: formData.experience,
-      about: formData.about
-    }));
+    try {
+      // 1. Update the Doctor document (which now also syncs the User doc on the backend)
+      await dispatch(updateDoctorProfileAsync({
+        doctorId: doctorProfile._id,
+        name: formData.name,
+        email: formData.email,
+        speciality: formData.speciality,
+        experience: formData.experience,
+        about: formData.about
+      })).unwrap();
 
-    // Update the Auth Slice natively
-    dispatch(updateProfile({ name: formData.name, email: formData.email }));
+      // 2. Update the local Auth state for instant UI feedback
+      dispatch(updateProfile({ 
+        name: formData.name, 
+        email: formData.email 
+      }));
 
-    alert("Profile updated successfully!");
-  }
+      Swal.fire({
+        title: "Success",
+        text: "Your profile has been synchronized successfully.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff',
+        customClass: { popup: 'rounded-3xl' }
+      });
+    } catch (err: any) {
+      Swal.fire({
+        title: "Update Failed",
+        text: err || "Could not save changes.",
+        icon: "error",
+        background: '#fff',
+        customClass: { popup: 'rounded-3xl' }
+      });
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 fade-in">
@@ -79,7 +113,7 @@ const Profile = () => {
               className="w-32 h-32 rounded-2xl object-cover shadow-sm" 
               src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.name?.replace(' ', '+') || "Doctor"}&background=003d9b&color=ffffff`} 
             />
-            <button className="absolute -bottom-3 -right-3 w-10 h-10 bg-primary text-white rounded-xl shadow-md flex items-center justify-center hover:bg-primary-container transition-colors">
+            <button onClick={handleAvatarUpdate} className="absolute -bottom-3 -right-3 w-10 h-10 bg-primary text-white rounded-xl shadow-md flex items-center justify-center hover:bg-primary-container transition-colors">
                <span className="material-symbols-outlined text-sm">edit</span>
             </button>
           </div>
@@ -87,8 +121,8 @@ const Profile = () => {
              <h3 className="text-xl font-bold font-manrope">{user?.name || "Doctor"}</h3>
              <p className="text-on-surface-variant text-sm mb-4">{doctorProfile?.speciality || "Speciality"} • {user?.email}</p>
              <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-               <button className="flex-1 sm:flex-none px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
-               <button className="flex-1 sm:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
+               <button onClick={() => alert("Upload coming soon!")} className="flex-1 sm:flex-none px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
+               <button onClick={() => alert("Remove coming soon!")} className="flex-1 sm:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
              </div>
           </div>
         </div>

@@ -30,9 +30,35 @@ const Doctors = () => {
 
   // Apply filters
   const filteredDoctors = doctors.filter(doc => {
-    // 1. Speciality
-    if (filters.speciality && doc.speciality !== filters.speciality) {
-      return false;
+    // 1. Speciality (using OR flexibility to match both Department and Title names)
+    if (filters.speciality) {
+      const f = filters.speciality.toLowerCase();
+      const d = (doc.speciality || "").toLowerCase();
+      
+      const pairs = [
+        ["general", "general practitioner"],
+        ["cardiology", "cardiologist"],
+        ["neurology", "neurologist"],
+        ["orthopedics", "orthopedic surgeon"],
+        ["dermatology", "dermatologist"],
+        ["ophthalmology", "ophthalmologist"],
+        ["pediatrics", "pediatrician"],
+        ["dentistry", "dentist"],
+        ["psychiatry", "psychiatrist"],
+        ["internal medicine", "physician"]
+      ];
+
+      let isMatch = f === d;
+      if (!isMatch) {
+         for (const pair of pairs) {
+           if (pair.includes(f) && pair.includes(d)) {
+             isMatch = true;
+             break;
+           }
+         }
+      }
+      
+      if (!isMatch) return false;
     }
     // 2. Search
     if (filters.search && !doc.name.toLowerCase().includes(filters.search.toLowerCase())) {
@@ -196,6 +222,7 @@ const Doctors = () => {
                   title={doc.speciality}
                   bio={doc.about || "Experienced medical professional."}
                   rating={doc.rating !== undefined ? doc.rating : 4.8}
+                  numReviews={doc.numReviews || 0}
                   image={doc.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(doc.name) + "&background=random"}
                   isOnline={true}
                   nextAvailable={nextAvail}

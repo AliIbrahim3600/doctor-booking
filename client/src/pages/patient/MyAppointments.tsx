@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/store";
-import { fetchAppointments, updateAppointmentStatusAsync } from "../../store/slices/appointmentSlice";
+import { fetchAppointments, updateAppointmentStatusAsync, rateAppointmentAsync } from "../../store/slices/appointmentSlice";
 import Loader from "../../components/common/Loader";
 import Swal from "sweetalert2";
+import RatingModal from "../../components/patient/RatingModal";
 
 // Removed APPOINTMENTS_MOCK
 
@@ -10,6 +11,7 @@ const MyAppointments = () => {
   const dispatch = useAppDispatch();
   const { appointments, isLoading } = useAppSelector((state) => state.appointment);
   const [filter, setFilter] = useState<"Upcoming" | "Past" | "All">("Upcoming");
+  const [ratingApt, setRatingApt] = useState<any | null>(null);
 
   useEffect(() => {
     dispatch(fetchAppointments());
@@ -42,6 +44,29 @@ const MyAppointments = () => {
         showConfirmButton: false,
         background: '#fff',
         customClass: { popup: 'rounded-3xl' }
+      });
+    }
+  };
+
+  const handleRateSubmit = async (rating: number, review: string) => {
+    if (!ratingApt) return;
+    
+    try {
+      await dispatch(rateAppointmentAsync({ id: ratingApt._id, rating, review })).unwrap();
+      Swal.fire({
+        title: "Thank you!",
+        text: "Your feedback has been submitted.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff',
+        customClass: { popup: 'rounded-3xl' }
+      });
+    } catch (err: any) {
+      Swal.fire({
+        title: "Error",
+        text: err || "Failed to submit rating.",
+        icon: "error"
       });
     }
   };
@@ -125,7 +150,7 @@ const MyAppointments = () => {
               <div className="flex flex-wrap items-center gap-3 lg:justify-end">
                 {appt.status !== "completed" && appt.status !== "cancelled" && (
                   <>
-                    <button className="flex-1 lg:flex-none px-4 py-2.5 bg-surface-container-high text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container-highest transition-colors cursor-pointer">
+                    <button onClick={() => Swal.fire('Notice', 'To reschedule, please cancel and book a new appointment.', 'info')} className="flex-1 lg:flex-none px-4 py-2.5 bg-surface-container-high text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container-highest transition-colors cursor-pointer">
                       Reschedule
                     </button>
                     <button 
@@ -137,9 +162,25 @@ const MyAppointments = () => {
                   </>
                 )}
                 {appt.status === "completed" && (
-                  <button className="w-full lg:w-auto px-4 py-2.5 border border-primary text-primary text-sm font-bold rounded-xl hover:bg-primary-fixed/20 transition-colors cursor-pointer">
-                    View Prescriptions
-                  </button>
+                  <div className="flex gap-2 w-full lg:w-auto">
+                    {!appt.rating ? (
+                      <button 
+                        onClick={() => setRatingApt(appt)}
+                        className="flex-1 lg:flex-none px-4 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">star</span>
+                        Rate Experience
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-amber-50 text-amber-700 rounded-xl border border-amber-200 text-sm font-bold">
+                        <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                        Rated {appt.rating}/5
+                      </div>
+                    )}
+                    <button onClick={() => Swal.fire('Information', 'No prescriptions uploaded for this visit yet.', 'info')} className="flex-1 lg:flex-none px-4 py-2.5 border border-primary text-primary text-sm font-bold rounded-xl hover:bg-primary-fixed/20 transition-colors cursor-pointer">
+                      View Prescriptions
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -155,6 +196,13 @@ const MyAppointments = () => {
         )}
       </div>
       {(isLoading && appointments.length === 0) && <Loader />}
+      
+      <RatingModal 
+        isOpen={!!ratingApt}
+        onClose={() => setRatingApt(null)}
+        onSubmit={handleRateSubmit}
+        doctorName={ratingApt?.doctorName || ""}
+      />
     </div>
   );
 };

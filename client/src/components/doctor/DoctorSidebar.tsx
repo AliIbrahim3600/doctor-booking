@@ -71,7 +71,7 @@ const DoctorSidebar = () => {
       </nav>
 
       <div className="mt-auto px-4 flex flex-col gap-2">
-        <button className="bg-signature-gradient text-white w-full py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-opacity">
+        <button onClick={() => alert("Support center coming soon!")} className="bg-signature-gradient text-white w-full py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-opacity">
           Schedule Break
         </button>
         <div className="h-[1px] bg-slate-200/50 my-4"></div>
