@@ -49,10 +49,9 @@ export const fetchAppointments = createAsyncThunk(
     try {
       const data = await appointmentService.getAppointments();
       return data; // array of Appointments
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch appointments",
-      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to fetch appointments";
+      return rejectWithValue(message);
     }
   },
 );
@@ -63,10 +62,9 @@ export const createAppointment = createAsyncThunk(
     try {
       const data = await appointmentService.createAppointment(appointmentData);
       return data; // created Appointment
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to create appointment",
-      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to create appointment";
+      return rejectWithValue(message);
     }
   },
 );
@@ -80,10 +78,9 @@ export const updateAppointmentStatusAsync = createAsyncThunk(
     try {
       const data = await appointmentService.updateStatus(id, status);
       return data; // updated Appointment
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to update appointment status",
-      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update appointment status";
+      return rejectWithValue(message);
     }
   },
 );
@@ -97,10 +94,9 @@ export const rateAppointmentAsync = createAsyncThunk(
     try {
       const data = await appointmentService.rateAppointment(id, rating, review);
       return data; // updated Appointment
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to submit rating",
-      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to submit rating";
+      return rejectWithValue(message);
     }
   },
 );

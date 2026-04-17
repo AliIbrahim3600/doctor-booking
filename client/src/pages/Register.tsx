@@ -164,20 +164,19 @@ export default function Register() {
     setErrors({});
 
     try {
-      const userData: Record<string, string> = {
+      const userData = {
         name: form.name,
         email: form.email,
         password: form.password,
         role: form.role.toLowerCase(),
+        ...(form.role === "Doctor" && { speciality: form.speciality }),
       };
-      if (form.role === "Doctor") {
-        userData.speciality = form.speciality; 
-      }
 
       await dispatch(registerUser(userData)).unwrap();
       navigate(form.role === "Doctor" ? "/doctor/dashboard" : "/patient/dashboard");
-    } catch (err: any) {
-      setErrors({ general: err || "Registration failed. Please try again." });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Registration failed. Please try again.";
+      setErrors({ general: message });
     } finally {
       setLoading(false);
     }

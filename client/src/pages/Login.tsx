@@ -105,9 +105,10 @@ export default function Login() {
 
     try {
       const result = await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
-      navigate(result.user.role === "doctor" ? "/doctor/dashboard" : "/patient/dashboard");
-    } catch (err: any) {
-      setErrors({ general: err || "Invalid email or password. Please try again." });
+      navigate(result.user.role === "doctor" ? "/doctor/dashboard" : result.user.role === "admin" ? "/admin/dashboard" : "/patient/dashboard");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Invalid email or password. Please try again.";
+      setErrors({ general: message });
     } finally {
       setLoading(false);
     }

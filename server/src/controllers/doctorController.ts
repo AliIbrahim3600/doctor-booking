@@ -126,3 +126,29 @@ export const approveDoctor = async (req: AuthRequest, res: Response): Promise<vo
     res.status(500).json({ message: error.message || "Failed to update approval" });
   }
 };
+
+// @desc    Delete a doctor
+// @route   DELETE /api/doctors/:id
+// @access  Private (Admin)
+export const deleteDoctor = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+
+    if (!doctor) {
+      res.status(404).json({ message: "Doctor not found" });
+      return;
+    }
+
+    // Delete associated user
+    if (doctor.userId) {
+      await User.findByIdAndDelete(doctor.userId);
+    }
+
+    // Delete doctor profile
+    await Doctor.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Doctor deleted successfully" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Failed to delete doctor" });
+  }
+};

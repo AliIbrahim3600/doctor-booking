@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/store";
-import { fetchAppointments, updateAppointmentStatusAsync, rateAppointmentAsync } from "../../store/slices/appointmentSlice";
+import { fetchAppointments, updateAppointmentStatusAsync, rateAppointmentAsync, type Appointment } from "../../store/slices/appointmentSlice";
 import Loader from "../../components/common/Loader";
 import Swal from "sweetalert2";
 import RatingModal from "../../components/patient/RatingModal";
 
 // Removed APPOINTMENTS_MOCK
 
+type FilterType = "Upcoming" | "Past" | "All";
+
 const MyAppointments = () => {
   const dispatch = useAppDispatch();
   const { appointments, isLoading } = useAppSelector((state) => state.appointment);
-  const [filter, setFilter] = useState<"Upcoming" | "Past" | "All">("Upcoming");
-  const [ratingApt, setRatingApt] = useState<any | null>(null);
+  const [filter, setFilter] = useState<FilterType>("Upcoming");
+  const [ratingApt, setRatingApt] = useState<Appointment | null>(null);
 
   useEffect(() => {
     dispatch(fetchAppointments());
@@ -62,10 +64,11 @@ const MyAppointments = () => {
         background: '#fff',
         customClass: { popup: 'rounded-3xl' }
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to submit rating.";
       Swal.fire({
         title: "Error",
-        text: err || "Failed to submit rating.",
+        text: message,
         icon: "error"
       });
     }
@@ -96,7 +99,7 @@ const MyAppointments = () => {
             {["Upcoming", "Past", "All"].map((f) => (
               <button
                 key={f}
-                onClick={() => setFilter(f as any)}
+                onClick={() => setFilter(f as FilterType)}
                 className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
                   filter === f
                     ? "bg-white text-primary shadow-sm"

@@ -104,11 +104,15 @@ const BookAppointment = () => {
       });
 
       navigate('/patient/appointments');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An error occurred while booking.";
+      if (err instanceof Error) {
+        message = err.message;
+      }
       Swal.fire({
         icon: 'error',
         title: 'Booking Failed',
-        text: err || "An error occurred while booking.",
+        text: message,
         confirmButtonColor: '#003d9b'
       });
     }
@@ -142,7 +146,7 @@ const BookAppointment = () => {
     return `${String(displayH).padStart(2, '0')}:${String(m).padStart(2, '0')} ${mod}`;
   };
 
-  let dynamicSlots: string[] = [];
+  const dynamicSlots: string[] = [];
   if (doctor && selectedDate) {
     const selectedDateObj = new Date(year, month, selectedDate);
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -150,11 +154,12 @@ const BookAppointment = () => {
     
     const dayAvailability = doctor.availability?.find(a => a.day === dayName);
     if (dayAvailability) {
-      let start = parseTimeString(dayAvailability.startTime);
-      let end = parseTimeString(dayAvailability.endTime);
-      while (start + 45 <= end) {
-        dynamicSlots.push(formatTimeFromMins(start));
-        start += 45;
+      const start = parseTimeString(dayAvailability.startTime);
+      const end = parseTimeString(dayAvailability.endTime);
+      let current = start;
+      while (current + 45 <= end) {
+        dynamicSlots.push(formatTimeFromMins(current));
+        current += 45;
       }
     }
   }

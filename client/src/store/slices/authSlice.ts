@@ -23,6 +23,19 @@ export interface AuthState {
   error: string | null;
 }
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  speciality?: string;
+}
+
 // ── Initial State ──────────────────────────────────────
 const initialState: AuthState = {
   user: null,
@@ -35,26 +48,28 @@ const initialState: AuthState = {
 // ── Async Thunks ───────────────────────────────────────
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (credentials: Record<string, string>, { rejectWithValue }) => {
+  async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const data = await authService.login(credentials);
       localStorage.setItem("token", data.token);
       return data; // { user, token }
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Login failed";
+      return rejectWithValue(message);
     }
   }
 );
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (userData: Record<string, string>, { rejectWithValue }) => {
+  async (userData: RegisterData, { rejectWithValue }) => {
     try {
       const data = await authService.register(userData);
       localStorage.setItem("token", data.token);
       return data; // { user, token }
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Registration failed");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Registration failed";
+      return rejectWithValue(message);
     }
   }
 );
@@ -65,21 +80,23 @@ export const loadUser = createAsyncThunk(
     try {
       const data = await authService.getMe();
       return data; // user object
-    } catch (error: any) {
+    } catch (error: unknown) {
       localStorage.removeItem("token");
-      return rejectWithValue(error.response?.data?.message || "Failed to load user");
+      const message = error instanceof Error ? error.message : "Failed to load user";
+      return rejectWithValue(message);
     }
   }
 );
 
 export const updatePatientProfileAsync = createAsyncThunk(
   "auth/updateProfile",
-  async (profileData: Record<string, string>, { rejectWithValue }) => {
+  async (profileData: { name?: string; email?: string; phone?: string; avatar?: string }, { rejectWithValue }) => {
     try {
       const data = await authService.updateProfile(profileData);
       return data; // updated user object
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update profile";
+      return rejectWithValue(message);
     }
   }
 );

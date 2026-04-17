@@ -54,10 +54,11 @@ const PatientProfile = () => {
         background: '#fff',
         customClass: { popup: 'rounded-3xl' }
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Could not save changes.";
       Swal.fire({
         title: "Update Failed",
-        text: err || "Could not save changes.",
+        text: message,
         icon: "error",
         background: '#fff',
         customClass: { popup: 'rounded-3xl' }

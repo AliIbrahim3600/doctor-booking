@@ -3,7 +3,7 @@ import type { TimeSlot, Doctor } from "../store/slices/doctorSlice";
 
 export const doctorService = {
   getDoctors: async () => {
-    const response = await api.get("/doctors");
+    const response = await api.get("/doctors?all=true");
     return response.data;
   },
 

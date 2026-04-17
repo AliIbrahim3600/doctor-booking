@@ -12,6 +12,7 @@ import PublicOnlyRoute from "./components/common/PublicOnlyRoute";
 import Footer from "./components/common/Footer";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import PatientLayout from "./components/patient/PatientLayout";
+import AdminLayout from "./components/admin/AdminLayout";
 
 // Public Pages
 const Landing = lazy(() => import("./pages/Landing"));
@@ -116,10 +117,12 @@ function App() {
 
                   {/* Admin Routes */}
                   <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                    <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                    <Route path="/admin/add-doctor" element={<AddDoctor />} />
-                    <Route path="/admin/doctors" element={<AllDoctors />} />
-                    <Route path="/admin/appointments" element={<AllAppointments />} />
+                    <Route element={<AdminLayout />}>
+                      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                      <Route path="/admin/add-doctor" element={<AddDoctor />} />
+                      <Route path="/admin/doctors" element={<AllDoctors />} />
+                      <Route path="/admin/appointments" element={<AllAppointments />} />
+                    </Route>
                   </Route>
 
                   {/* Catch-all */}

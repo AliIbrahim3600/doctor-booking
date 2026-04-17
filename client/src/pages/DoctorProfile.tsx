@@ -8,12 +8,21 @@ import { useState } from "react";
 import { FiStar } from "react-icons/fi";
 import Swal from "sweetalert2";
 
+interface Review {
+  _id: string;
+  patientName: string;
+  rating: number;
+  review: string;
+  date: string;
+  createdAt: string;
+}
+
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { doctors, isLoading } = useAppSelector((state) => state.doctor);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {

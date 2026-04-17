@@ -60,8 +60,9 @@ export const fetchDoctors = createAsyncThunk(
     try {
       const data = await doctorService.getDoctors();
       return data; // array of Doctors
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch doctors");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to fetch doctors";
+      return rejectWithValue(message);
     }
   }
 );
@@ -73,8 +74,9 @@ export const fetchDoctorById = createAsyncThunk(
     try {
       const data = await doctorService.getDoctorById(doctorId);
       return data; // single Doctor
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch doctor details");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to fetch doctor details";
+      return rejectWithValue(message);
     }
   }
 );
@@ -85,8 +87,9 @@ export const updateDoctorAvailabilityAsync = createAsyncThunk(
     try {
       const data = await doctorService.updateAvailability(doctorId, availability);
       return data; // updated Doctor or just availability payload depending on backend
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update availability");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update availability";
+      return rejectWithValue(message);
     }
   }
 );
@@ -98,8 +101,51 @@ export const updateDoctorProfileAsync = createAsyncThunk(
       const { doctorId, ...data } = profileData;
       const responseData = await doctorService.updateProfile(doctorId, data);
       return responseData; // updated Doctor
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update profile";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const approveDoctor = createAsyncThunk(
+  "doctor/approveDoctor",
+  async ({ id, isApproved }: { id: string; isApproved: boolean }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/doctors/${id}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ isApproved }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to update approval');
+      return data;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update approval";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const deleteDoctor = createAsyncThunk(
+  "doctor/deleteDoctor",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/doctors/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to delete doctor');
+      return id;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to delete doctor";
+      return rejectWithValue(message);
     }
   }
 );
@@ -207,6 +253,35 @@ const doctorSlice = createSlice({
         }
       })
       .addCase(updateDoctorProfileAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Approve Doctor
+      .addCase(approveDoctor.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(approveDoctor.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.doctors.findIndex(d => d._id === action.payload._id);
+        if (index !== -1) {
+          state.doctors[index] = { ...state.doctors[index], ...action.payload };
+        }
+      })
+      .addCase(approveDoctor.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Delete Doctor
+      .addCase(deleteDoctor.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteDoctor.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.doctors = state.doctors.filter(d => d._id !== action.payload);
+      })
+      .addCase(deleteDoctor.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

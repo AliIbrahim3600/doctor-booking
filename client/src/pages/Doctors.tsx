@@ -5,12 +5,14 @@ import SpecialityFilter from "../components/patient/SpecialityFilter";
 import DoctorCard from "../components/patient/DoctorCard";
 import Loader from "../components/common/Loader";
 
+type SortOption = "Recommended" | "Rating" | "Experience" | "Fees";
+
 const Doctors = () => {
   const dispatch = useAppDispatch();
   const { doctors, isLoading, error, filters } = useAppSelector((state) => state.doctor);
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState<"Recommended" | "Rating" | "Experience" | "Fees">("Recommended");
+  const [sortBy, setSortBy] = useState<SortOption>("Recommended");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
@@ -165,7 +167,7 @@ const Doctors = () => {
               <span className="material-symbols-outlined text-sm absolute left-4 pointer-events-none">sort</span>
               <select 
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
                 className="appearance-none bg-transparent pl-10 pr-8 py-2 font-semibold text-sm outline-none cursor-pointer w-full"
               >
                 <option value="Recommended">Sort by: Recommended</option>

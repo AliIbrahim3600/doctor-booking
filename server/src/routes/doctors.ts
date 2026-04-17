@@ -5,6 +5,7 @@ import {
   updateAvailability,
   updateDoctorProfile,
   approveDoctor,
+  deleteDoctor,
 } from "../controllers/doctorController";
 import { getDoctorReviews } from "../controllers/appointmentController";
 import { protect, authorize } from "../middleware/auth";
@@ -22,5 +23,6 @@ router.put("/:id/profile", protect, authorize("doctor"), updateDoctorProfile);
 
 // Admin only
 router.patch("/:id/approve", protect, authorize("admin"), approveDoctor);
+router.delete("/:id", protect, authorize("admin"), deleteDoctor);
 
 export default router;
