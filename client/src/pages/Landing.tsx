@@ -22,13 +22,20 @@ import { fetchDoctors, setSpecialityFilter } from "../store/slices/doctorSlice";
 /* ─── Data ─────────────────────────────────────────────── */
 // Remove static DOCTORS array, now fetched from Redux
 
-const SPECIALTIES = [
-  { icon: FiHeart,    label: "Cardiology",  count: 42 },
-  { icon: FiCpu,      label: "Neurology",   count: 28 },
-  { icon: FiActivity, label: "Orthopedics", count: 35 },
-  { icon: FiEye,      label: "Ophthalmology", count: 19 },
-  { icon: FiSmile,    label: "Dentistry",   count: 54 },
-  { icon: FiBriefcase,label: "General",     count: 87 },
+const SPECIALTY_ICONS: Record<string, any> = {
+  "Cardiology": FiHeart,
+  "Neurology": FiCpu,
+  "Orthopedics": FiActivity,
+  "Ophthalmology": FiEye,
+  "Dentistry": FiSmile,
+  "General": FiBriefcase,
+  "Internal Medicine": FiActivity,
+  "Pediatrics": FiSmile,
+  "Dermatology": FiEye,
+};
+
+const DEFAULT_SPECIALTIES = [
+  "Cardiology", "Neurology", "Orthopedics", "Ophthalmology", "Dentistry", "General"
 ];
 
 const STEPS = [
@@ -140,6 +147,17 @@ export default function Landing() {
 
   const featuredDoctors = doctors.slice(0, 3);
 
+  const allSpecialtyLabels = Array.from(new Set([
+    ...DEFAULT_SPECIALTIES,
+    ...doctors.map(d => d.speciality).filter(Boolean)
+  ]));
+
+  const dynamicSpecialties = allSpecialtyLabels.map(label => ({
+    icon: SPECIALTY_ICONS[label] || FiBriefcase,
+    label,
+    count: doctors.filter(d => d.speciality === label).length
+  }));
+
   return (
     <div className="bg-white text-slate-900">
 
@@ -239,7 +257,7 @@ export default function Landing() {
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Our Specialties</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {SPECIALTIES.map(({ icon: Icon, label, count }) => (
+            {dynamicSpecialties.map(({ icon: Icon, label, count }) => (
               <Link
                 key={label}
                 to="/doctors"

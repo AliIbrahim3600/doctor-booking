@@ -49,7 +49,7 @@ function Layout() {
 
   const isPatientDashboardRoute = pathname.startsWith("/patient");
   const showNav = !AUTH_ROUTES.includes(pathname) && !isPatientDashboardRoute;
-  const showFooter = pathname !== "/" && !isPatientDashboardRoute; 
+  const showFooter = pathname !== "/" && pathname !== "/login" && pathname !== "/register" && !isPatientDashboardRoute; 
 
   return (
     <>
