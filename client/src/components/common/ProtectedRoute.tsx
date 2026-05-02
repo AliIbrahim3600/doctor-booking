@@ -1,12 +1,17 @@
 import { Navigate, Outlet } from "react-router";
 import { useAppSelector } from "../../store/store";
+import Loader from "./Loader";
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, isLoading, token } = useAppSelector((state) => state.auth);
+
+  if (isLoading || (token && !user)) {
+    return <Loader />;
+  }
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;

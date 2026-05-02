@@ -1,8 +1,13 @@
 import { Navigate, Outlet } from "react-router";
 import { useAppSelector } from "../../store/store";
+import Loader from "./Loader";
 
 export default function PublicOnlyRoute() {
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, isLoading, token } = useAppSelector((state) => state.auth);
+
+  if (isLoading || (token && !user)) {
+    return <Loader />;
+  }
 
   if (isAuthenticated && user) {
     if (user.role === "doctor") return <Navigate to="/doctor/dashboard" replace />;
