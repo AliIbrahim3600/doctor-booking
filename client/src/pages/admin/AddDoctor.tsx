@@ -136,6 +136,9 @@ const AddDoctor = () => {
         password: form.password,
         role: "doctor",
         speciality: form.speciality,
+        experience: form.experience,
+        fees: form.fees,
+        phone: form.phone,
       })).unwrap();
       
       Swal.fire("Success!", "Doctor account created successfully.", "success");

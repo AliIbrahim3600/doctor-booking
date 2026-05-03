@@ -20,22 +20,26 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
+    phone: doctorProfile?.phone || "",
     speciality: doctorProfile?.speciality || "General Practice",
     experience: doctorProfile?.experience || 0,
     about: doctorProfile?.about || "",
   });
 
+  // Sync form data when doctor profile changes
   useEffect(() => {
-    if (user || doctorProfile) {
+    if (doctorProfile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user?.name || "",
         email: user?.email || "",
-        speciality: doctorProfile?.speciality || "General Practice",
-        experience: doctorProfile?.experience || 0,
-        about: doctorProfile?.about || "",
+        phone: doctorProfile.phone || "",
+        speciality: doctorProfile.speciality || "General Practice",
+        experience: doctorProfile.experience || 0,
+        about: doctorProfile.about || "",
       });
     }
-  }, [user, doctorProfile]);
+  }, [doctorProfile?._id, doctorProfile, user?._id, user?.name, user?.email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -67,6 +71,7 @@ const Profile = () => {
         doctorId: doctorProfile._id,
         name: formData.name,
         email: formData.email,
+        phone: formData.phone,
         speciality: formData.speciality,
         experience: formData.experience,
         about: formData.about
@@ -121,10 +126,10 @@ const Profile = () => {
           <div>
              <h3 className="text-xl font-bold font-manrope">{user?.name || "Doctor"}</h3>
              <p className="text-on-surface-variant text-sm mb-4">{doctorProfile?.speciality || "Speciality"} • {user?.email}</p>
-             <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-               <button onClick={() => alert("Upload coming soon!")} className="flex-1 sm:flex-none px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
-               <button onClick={() => alert("Remove coming soon!")} className="flex-1 sm:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
-             </div>
+               <div className="flex flex-wrap justify-center sm:justify-start gap-3">
+                 <button onClick={() => Swal.fire("Info", "Document upload coming soon!", "info")} className="flex-1 sm:flex-none px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-opacity">Upload New</button>
+                 <button onClick={() => Swal.fire("Info", "Document removal coming soon!", "info")} className="flex-1 sm:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-bold rounded-xl hover:bg-surface-container transition-colors">Remove</button>
+               </div>
           </div>
         </div>
 
@@ -136,7 +141,11 @@ const Profile = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Email Address</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="px-4 py-3 rounded-xl border border-outline-variant/20 bg-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full text-sm placeholder:text-on-surface-variant transition-all text-on-surface" />
+              <input type="email" name="email" value={formData.email} readOnly className="px-4 py-3 rounded-xl border border-outline-variant/20 bg-surface focus:outline-none opacity-70 cursor-not-allowed w-full text-sm placeholder:text-on-surface-variant transition-all text-on-surface" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Phone</label>
+              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="px-4 py-3 rounded-xl border border-outline-variant/20 bg-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full text-sm placeholder:text-on-surface-variant transition-all text-on-surface" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Specialisation</label>

@@ -26,7 +26,9 @@ const AllAppointments = () => {
     return matchesStatus && matchesDoctor && matchesSearch;
   });
 
-  const handleStatusChange = (id: string, newStatus: string) => {
+  const handleStatusChange = (id: string, newStatus: string, currentStatus: string) => {
+    if (newStatus === currentStatus) return;
+    
     Swal.fire({
       title: "Update Status",
       text: `Change appointment status to "${newStatus}"?`,
@@ -125,7 +127,7 @@ const AllAppointments = () => {
                     <td className="py-4 px-4">
                       <select
                         value={appt.status}
-                        onChange={(e) => handleStatusChange(appt._id, e.target.value)}
+                        onChange={(e) => handleStatusChange(appt._id, e.target.value, appt.status)}
                         className="text-xs px-2 py-1 bg-surface-container-low rounded-lg text-on-surface focus:outline-none"
                       >
                         <option value="pending">Pending</option>

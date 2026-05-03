@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Outlet, useLocation, NavLink, useNavigate } from "react-router";
+import { useState } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { logout } from "../../store/slices/authSlice";
 
@@ -12,14 +12,11 @@ const ADMIN_LINKS = [
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [location.pathname]);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   const handleSignOut = () => {
     dispatch(logout());
@@ -29,7 +26,7 @@ const AdminLayout = () => {
   return (
     <div className="bg-surface min-h-screen text-on-surface flex flex-col md:flex-row relative">
       <div className="md:hidden flex items-center justify-between p-4 bg-surface border-b border-outline-variant/20 sticky top-0 z-30 shadow-sm">
-        <h1 className="text-xl font-extrabold font-manrope text-blue-800 tracking-tight">The Clinical Atelier</h1>
+        <h1 className="text-xl font-extrabold font-manrope text-blue-800 tracking-tight">Doctor Booking</h1>
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
           className="p-2 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors"
@@ -41,14 +38,14 @@ const AdminLayout = () => {
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity" 
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={closeSidebar}
         />
       )}
 
       <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:flex-shrink-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <aside className="py-8 px-4 flex flex-col gap-6 h-full w-72 bg-slate-50 md:rounded-r-[1.5rem] z-40 border-r border-slate-200/50 shadow-sm md:shadow-none">
+        <aside className="md:sticky md:top-0 md:h-screen py-8 px-4 flex flex-col gap-6 h-full w-72 bg-slate-50 md:rounded-r-[1.5rem] z-40 border-r border-slate-200/50 shadow-sm md:shadow-none md:overflow-y-auto">
           <div className="px-4 mb-4">
-            <h1 className="text-xl font-extrabold font-manrope text-blue-800">The Clinical Atelier</h1>
+            <h1 className="text-xl font-extrabold font-manrope text-blue-800">Doctor Booking</h1>
             <p className="text-xs text-on-surface-variant mt-1">Admin Panel</p>
           </div>
           
@@ -67,6 +64,7 @@ const AdminLayout = () => {
               <NavLink 
                 key={link.name}
                 to={link.path} 
+                onClick={closeSidebar}
                 className={({ isActive }) => 
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive ? "bg-white text-blue-700 shadow-sm font-semibold scale-95" : "text-slate-500 hover:bg-slate-200/50"}`
                 }

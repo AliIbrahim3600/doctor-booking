@@ -40,18 +40,26 @@ const Dashboard = () => {
 
   const daySlots = currentDoctor?.availability?.filter(slot => slot.day === selectedDay) || [];
 
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newSlot, setNewSlot] = useState({ startTime: "09:00 AM", endTime: "10:00 AM" });
+
   const handleAddSlot = () => {
     if (!currentDoctor) {
-      alert("Doctor profile not found.");
+      Swal.fire("Error", "Doctor profile not found.", "error");
       return;
     }
-    const startTime = prompt("Enter Start Time (e.g. 08:00 AM)", "08:00 AM");
-    if (!startTime) return;
-    const endTime = prompt("Enter End Time (e.g. 12:00 PM)", "12:00 PM");
-    if (!endTime) return;
-
-    const newAvailability = [...currentDoctor.availability, { day: selectedDay, startTime, endTime }];
+    const existing = currentDoctor.availability?.find(
+      (s) => s.day === selectedDay && s.startTime === newSlot.startTime && s.endTime === newSlot.endTime
+    );
+    if (existing) {
+      Swal.fire("Duplicate", "This time slot already exists.", "warning");
+      return;
+    }
+    const newAvailability = [...(currentDoctor.availability || []), { day: selectedDay, startTime: newSlot.startTime, endTime: newSlot.endTime }];
     dispatch(updateDoctorAvailabilityAsync({ doctorId: currentDoctor._id, availability: newAvailability }));
+    setShowAddModal(false);
+    setNewSlot({ startTime: "09:00 AM", endTime: "10:00 AM" });
+    Swal.fire("Added", `Time slot added for ${selectedDay}.`, "success");
   };
 
   const handleRemoveSlot = (startTime: string, endTime: string) => {
@@ -174,9 +182,48 @@ const Dashboard = () => {
                 )}
               </div>
               
-              <button onClick={handleAddSlot} className="w-full py-4 rounded-xl font-bold text-sm bg-surface-container-highest text-primary hover:bg-primary-fixed/30 transition-colors flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-sm">add_circle</span>
-                Add Time Slot
+              {showAddModal && (
+                <div className="bg-white rounded-xl border border-outline-variant/20 p-5 space-y-4">
+                  <h4 className="text-sm font-bold text-on-surface">New Time Slot</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Start Time</label>
+                      <input 
+                        type="text" 
+                        value={newSlot.startTime} 
+                        onChange={(e) => setNewSlot({ ...newSlot, startTime: e.target.value })} 
+                        placeholder="09:00 AM" 
+                        className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-sm font-body outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5 block">End Time</label>
+                      <input 
+                        type="text" 
+                        value={newSlot.endTime} 
+                        onChange={(e) => setNewSlot({ ...newSlot, endTime: e.target.value })} 
+                        placeholder="10:00 AM" 
+                        className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-sm font-body outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={handleAddSlot} className="flex-1 py-2.5 rounded-lg font-bold text-sm bg-primary text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5">
+                      <span className="material-symbols-outlined text-sm">add</span> Save
+                    </button>
+                    <button onClick={() => setShowAddModal(false)} className="flex-1 py-2.5 rounded-lg font-bold text-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <button 
+                onClick={() => setShowAddModal(!showAddModal)} 
+                className="w-full py-4 rounded-xl font-bold text-sm bg-surface-container-highest text-primary hover:bg-primary-fixed/30 transition-colors flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">{showAddModal ? "close" : "add_circle"}</span> 
+                {showAddModal ? "Close Form" : "Add Time Slot"}
               </button>
             </div>
           </div>

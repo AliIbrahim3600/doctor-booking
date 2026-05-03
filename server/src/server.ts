@@ -6,6 +6,8 @@ import connectDB from "./config/db";
 import authRoutes from "./routes/auth";
 import doctorRoutes from "./routes/doctors";
 import appointmentRoutes from "./routes/appointments";
+import recordRoutes from "./routes/records";
+import messageRoutes from "./routes/messages";
 
 // Load env vars
 dotenv.config();
@@ -26,6 +28,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/records", recordRoutes);
+app.use("/api/messages", messageRoutes);
 
 // Health check
 app.get("/api/health", (_req, res) => {

@@ -40,6 +40,7 @@ const DoctorProfilePage = lazy(() => import("./pages/doctor/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AddDoctor = lazy(() => import("./pages/admin/AddDoctor"));
 const AllDoctors = lazy(() => import("./pages/admin/AllDoctors"));
+const EditDoctor = lazy(() => import("./pages/admin/EditDoctor"));
 const AllAppointments = lazy(() => import("./pages/admin/AllAppointments"));
 
 const AUTH_ROUTES = ["/login", "/register"];
@@ -121,6 +122,7 @@ function App() {
                       <Route path="/admin/dashboard" element={<AdminDashboard />} />
                       <Route path="/admin/add-doctor" element={<AddDoctor />} />
                       <Route path="/admin/doctors" element={<AllDoctors />} />
+                      <Route path="/admin/doctors/:id/edit" element={<EditDoctor />} />
                       <Route path="/admin/appointments" element={<AllAppointments />} />
                     </Route>
                   </Route>

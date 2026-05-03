@@ -127,7 +127,7 @@ export default function Login() {
       <div className="absolute bottom-16 left-12 right-12 text-white">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-blue-600 font-bold text-xl">+</div>
-          <h2 className="text-2xl font-bold">Aura Health</h2>
+          <h2 className="text-2xl font-bold">Doctor Booking</h2>
         </div>
         <p className="text-xl text-blue-100 max-w-lg">
           Welcome back! Continue delivering exceptional care to your patients or manage your appointments smoothly.

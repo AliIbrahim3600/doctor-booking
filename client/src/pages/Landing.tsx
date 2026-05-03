@@ -22,7 +22,7 @@ import { fetchDoctors, setSpecialityFilter } from "../store/slices/doctorSlice";
 /* ─── Data ─────────────────────────────────────────────── */
 // Remove static DOCTORS array, now fetched from Redux
 
-const SPECIALTY_ICONS: Record<string, any> = {
+const SPECIALTY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   "Cardiology": FiHeart,
   "Neurology": FiCpu,
   "Orthopedics": FiActivity,
@@ -69,7 +69,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "As someone who manages multiple family appointments, The Clinical Atelier has been a life-saver. The reminders and record-keeping are seamless.",
+       "As someone who manages multiple family appointments, Doctor Booking has been a life-saver. The reminders and record-keeping are seamless.",
     name: "David Miller",
     role: "Patient since 2022",
     stars: 5,
@@ -240,7 +240,7 @@ export default function Landing() {
                   +
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-800">Aura Health</p>
+                  <p className="text-xs font-bold text-slate-800">Doctor Booking</p>
                   <p className="text-xs text-slate-400">Instant Booking</p>
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function Landing() {
               Ready to Take Control of Your Health?
             </h2>
             <p className="text-blue-100 mb-8 max-w-xl mx-auto relative">
-              Join thousands of patients who trust Aura Health for seamless, professional medical care.
+              Join thousands of patients who trust Doctor Booking for seamless, professional medical care.
             </p>
             <div className="flex flex-wrap justify-center gap-3 relative">
               <Link
@@ -455,7 +455,7 @@ export default function Landing() {
             <div className="col-span-2 sm:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg">+</div>
-                <span className="font-bold text-slate-900">Aura <span className="text-blue-600">Health</span></span>
+                <span className="font-bold text-slate-900">Doctor <span className="text-blue-600">Booking</span></span>
               </div>
               <p className="text-sm text-slate-400 leading-relaxed">
                 Professional healthcare, reimagined for the modern patient.
@@ -500,7 +500,7 @@ export default function Landing() {
           </div>
 
           <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-            <p>© {year} Aura Health. All rights reserved.</p>
+            <p>© {year} Doctor Booking. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1"><FiShield className="text-emerald-500" /> HIPAA Secure</span>
               <span className="flex items-center gap-1"><FiCheckCircle className="text-blue-500" /> SSL Encrypted</span>

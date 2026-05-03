@@ -4,7 +4,11 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 import { logout } from "../../store/slices/authSlice";
 import { fetchDoctors } from "../../store/slices/doctorSlice";
 
-const DoctorSidebar = () => {
+interface DoctorSidebarProps {
+  onLinkClick?: () => void;
+}
+
+const DoctorSidebar = ({ onLinkClick }: DoctorSidebarProps) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { doctors, selectedDoctor } = useAppSelector((state) => state.doctor);
@@ -25,7 +29,7 @@ const DoctorSidebar = () => {
   return (
     <aside className="py-8 px-4 flex flex-col gap-6 h-full w-72 bg-slate-50 md:rounded-r-[1.5rem] z-40 border-r border-slate-200/50 shadow-sm md:shadow-none">
       <div className="px-4 mb-4">
-        <h1 className="text-xl font-extrabold font-manrope text-blue-800">The Clinical Atelier</h1>
+        <h1 className="text-xl font-extrabold font-manrope text-blue-800">Doctor Booking</h1>
       </div>
       
       <div className="flex flex-col items-center gap-2 px-4 mb-6">
@@ -43,6 +47,7 @@ const DoctorSidebar = () => {
       <nav className="flex flex-col gap-1">
         <NavLink 
           to="/doctor/dashboard" 
+          onClick={onLinkClick}
           className={({ isActive }) => 
             `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive ? "bg-white text-blue-700 shadow-sm font-semibold scale-95" : "text-slate-500 hover:bg-slate-200/50"}`
           }
@@ -52,6 +57,7 @@ const DoctorSidebar = () => {
         </NavLink>
         <NavLink 
           to="/doctor/appointments" 
+          onClick={onLinkClick}
           className={({ isActive }) => 
             `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive ? "bg-white text-blue-700 shadow-sm font-semibold scale-95" : "text-slate-500 hover:bg-slate-200/50"}`
           }
@@ -61,6 +67,7 @@ const DoctorSidebar = () => {
         </NavLink>
         <NavLink 
           to="/doctor/profile" 
+          onClick={onLinkClick}
           className={({ isActive }) => 
             `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive ? "bg-white text-blue-700 shadow-sm font-semibold scale-95" : "text-slate-500 hover:bg-slate-200/50"}`
           }

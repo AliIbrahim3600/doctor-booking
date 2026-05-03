@@ -15,16 +15,10 @@ const PatientProfile = () => {
 
   const [saveMessage, setSaveMessage] = useState("");
 
-  const handleAvatarUpdate = () => {
-    const newUrl = prompt("Please enter the URL for your profile picture:", user?.avatar || "");
-    if (newUrl !== null) {
-      dispatch(updatePatientProfileAsync({ avatar: newUrl }));
-      dispatch(updateProfile({ avatar: newUrl }));
-    }
-  };
-
+  // Sync form data when user changes
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name,
         email: user.email,
@@ -32,6 +26,14 @@ const PatientProfile = () => {
       });
     }
   }, [user]);
+
+  const handleAvatarUpdate = () => {
+    const newUrl = prompt("Please enter the URL for your profile picture:", user?.avatar || "");
+    if (newUrl !== null) {
+      dispatch(updatePatientProfileAsync({ avatar: newUrl }));
+      dispatch(updateProfile({ avatar: newUrl }));
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -16,10 +16,11 @@ const Doctors = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  // Reset pagination when filters or sorting change
+  // Reset page when filters change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
-  }, [filters, sortBy]);
+  }, [filters.speciality, filters.search, sortBy]);
 
   useEffect(() => {
     dispatch(fetchDoctors());

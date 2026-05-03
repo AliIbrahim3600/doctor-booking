@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { fetchDoctors } from "../store/slices/doctorSlice";
@@ -18,19 +18,21 @@ const BookAppointment = () => {
   const [selectedTime, setSelectedTime] = useState<string>("");
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     phone: "",
     reason: "General Checkup",
     notes: "",
   });
 
+  // Sync form data when user changes
   useEffect(() => {
     if (user) {
-      setFormData(prev => ({
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData((prev) => ({
         ...prev,
-        name: user.name || "",
-        email: user.email || "",
+        name: user.name || prev.name,
+        email: user.email || prev.email,
       }));
     }
   }, [user]);
@@ -132,10 +134,11 @@ const BookAppointment = () => {
 
   const parseTimeString = (timeStr: string) => {
     const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-    if (modifier === 'PM' && hours < 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-    return hours * 60 + minutes;
+    const [hours, minutes] = time.split(':').map(Number);
+    let h = hours;
+    if (modifier === 'PM' && h < 12) h += 12;
+    if (modifier === 'AM' && h === 12) h = 0;
+    return h * 60 + minutes;
   };
 
   const formatTimeFromMins = (mins: number) => {

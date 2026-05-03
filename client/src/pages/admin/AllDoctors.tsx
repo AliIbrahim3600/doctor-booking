@@ -158,8 +158,14 @@ const AllDoctors = () => {
                         Reject
                       </button>
                     </div>
-                  ) : (
+                  )                    : (
                     <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => navigate(`/admin/doctors/${doc._id}/edit`)}
+                        className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        Edit Profile
+                      </button>
                       <button
                         onClick={() => navigate(`/doctor/${doc._id}`)}
                         className="w-full py-2 bg-surface-container-high text-on-surface text-xs font-bold rounded-lg hover:bg-surface-container-low transition-colors"

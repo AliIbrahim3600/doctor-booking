@@ -34,6 +34,11 @@ interface RegisterData {
   password: string;
   role: string;
   speciality?: string;
+  experience?: string;
+  fees?: string;
+  phone?: string;
+  about?: string;
+  avatar?: string;
 }
 
 // ── Initial State ──────────────────────────────────────

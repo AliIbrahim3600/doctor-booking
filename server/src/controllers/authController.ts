@@ -34,12 +34,13 @@ export const register = async (req: AuthRequest, res: Response): Promise<void> =
         userId: user._id,
         name: user.name,
         email: user.email,
+        phone: req.body.phone || "",
         speciality: req.body.speciality || "General Physician",
-        experience: 5,
-        fees: 50,
-        about: "Dedicated medical professional committed to providing high-quality patient care and specialized treatment.",
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=003d9b&color=fff`,
-        isApproved: true,
+        experience: req.body.experience ? parseInt(req.body.experience) : 5,
+        fees: req.body.fees ? parseInt(req.body.fees) : 50,
+        about: req.body.about || "Dedicated medical professional committed to providing high-quality patient care and specialized treatment.",
+        avatar: req.body.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=003d9b&color=fff`,
+        isApproved: false,
       });
     }
 

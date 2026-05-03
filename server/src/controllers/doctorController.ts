@@ -152,3 +152,60 @@ export const deleteDoctor = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({ message: error.message || "Failed to delete doctor" });
   }
 };
+
+// @desc    Admin update any doctor field
+// @route   PUT /api/doctors/:id
+// @access  Private (Admin)
+export const adminUpdateDoctor = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const {
+      name,
+      email,
+      speciality,
+      experience,
+      fees,
+      avatar,
+      phone,
+      about,
+      availability,
+      isApproved,
+    } = req.body;
+
+    const doctor = await Doctor.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        email,
+        speciality,
+        experience: experience !== undefined ? parseInt(experience) : undefined,
+        fees: fees !== undefined ? parseInt(fees) : undefined,
+        avatar,
+        phone,
+        about,
+        availability,
+        isApproved,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!doctor) {
+      res.status(404).json({ message: "Doctor not found" });
+      return;
+    }
+
+    // Sync name, avatar, phone, email to User document
+    const userUpdates: Record<string, any> = {};
+    if (name) userUpdates.name = name;
+    if (avatar) userUpdates.avatar = avatar;
+    if (phone !== undefined) userUpdates.phone = phone;
+    if (email) userUpdates.email = email;
+
+    if (Object.keys(userUpdates).length > 0 && doctor.userId) {
+      await User.findByIdAndUpdate(doctor.userId, userUpdates);
+    }
+
+    res.json(doctor);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Failed to update doctor" });
+  }
+};

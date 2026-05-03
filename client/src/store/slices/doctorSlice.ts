@@ -150,6 +150,28 @@ export const deleteDoctor = createAsyncThunk(
   }
 );
 
+export const adminUpdateDoctorAsync = createAsyncThunk(
+  "doctor/adminUpdateDoctor",
+  async ({ doctorId, data }: { doctorId: string; data: Partial<Doctor> }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/doctors/${doctorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Failed to update doctor');
+      return result;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update doctor";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 // ── Slice ──────────────────────────────────────────────
 const doctorSlice = createSlice({
   name: "doctor",
@@ -282,6 +304,26 @@ const doctorSlice = createSlice({
         state.doctors = state.doctors.filter(d => d._id !== action.payload);
       })
       .addCase(deleteDoctor.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Admin Update Doctor
+      .addCase(adminUpdateDoctorAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(adminUpdateDoctorAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updated = action.payload;
+        const index = state.doctors.findIndex(d => d._id === updated._id);
+        if (index !== -1) {
+          state.doctors[index] = { ...state.doctors[index], ...updated } as Doctor;
+        }
+        if (state.selectedDoctor && state.selectedDoctor._id === updated._id) {
+          state.selectedDoctor = { ...state.selectedDoctor, ...updated } as Doctor;
+        }
+      })
+      .addCase(adminUpdateDoctorAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

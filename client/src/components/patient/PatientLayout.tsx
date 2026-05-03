@@ -66,7 +66,7 @@ const PatientLayout = () => {
                </div>
                <div className="text-left">
                   <p className="text-[10px] font-bold text-outline-variant tracking-wider uppercase">Welcome Back</p>
-                  <p className="text-sm font-headline font-extrabold text-primary">{user?.name || "The Clinical Atelier"}</p>
+                  <p className="text-sm font-headline font-extrabold text-primary">{user?.name || "Doctor Booking"}</p>
                </div>
            </div>
            <button className="relative p-2 text-outline-variant hover:text-on-surface transition-colors cursor-pointer">

@@ -25,7 +25,7 @@ const PatientSidebar = () => {
       {/* Brand */ }
       <div className="flex items-center gap-2 px-2 mb-8 cursor-pointer" onClick={() => navigate('/')}>
         <h1 className="text-xl font-extrabold font-headline text-primary tracking-tight">
-          The Clinical Atelier
+          Doctor Booking
         </h1>
       </div>
 

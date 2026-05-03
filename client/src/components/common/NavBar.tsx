@@ -97,7 +97,7 @@ export default function NavBar() {
                 +
               </div>
               <span className="text-[15px] font-bold text-slate-900 tracking-tight">
-                Aura <span className="text-blue-600">Health</span>
+                Doctor <span className="text-blue-600">Booking</span>
               </span>
             </Link>
 
